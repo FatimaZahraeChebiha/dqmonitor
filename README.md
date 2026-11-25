@@ -6,8 +6,6 @@ track results — scores, anomalies, trends — across your organization.
 
 Built during my internship at Enhanced Technologies (Rabat, July to August 2026), as part of the Data Science and Artificial Intelligence engineering program at ENSA Fès.
 
-![Dashboard](docs/screenshots/dashboard.png)
-
 ## Stack
 
 | Layer | Technology |
@@ -38,37 +36,7 @@ Built during my internship at Enhanced Technologies (Rabat, July to August 2026)
 - **Scheduled analysis (Airflow)**: a DAG (`airflow/dags/scheduled_quality_analysis.py`) sweeps datasets uploaded-but-never-analyzed every 15 minutes and triggers the same analysis pipeline the manual "Analyze" button uses, via a small internal API (`/internal/datasets/pending`, `/internal/datasets/{id}/analyze`).
 - **Ops dashboards (Grafana)**: a provisioned dashboard (`grafana/provisioning/`) reading directly from MySQL via a dedicated read-only user — dataset throughput and status breakdown, quality score trend, active rules/users, and recent audit activity. Complements, rather than duplicates, the in-app Dashboard's end-user KPIs.
 
-## Screenshots
-
-**Quality reports**: every analysis produces a score, the number of anomalies and the result of each validation rule, exportable as PDF.
-
-![Reports list](docs/screenshots/reports_list.png)
-![Report detail](docs/screenshots/report_detail.png)
-
-**Anomaly explorer and correction**: anomalies grouped by column, rule or check type, corrected directly in the interface; the corrected file is re-analysed and reaches a 100% score.
-
-![Anomaly explorer](docs/screenshots/anomaly_explorer.png)
-![Anomaly correction](docs/screenshots/anomaly_correction.png)
-![Report after correction](docs/screenshots/report_after_correction.png)
-
-**AI assistant** answering questions about the platform's own datasets, rules and reports.
-
-![AI assistant](docs/screenshots/ai_assistant.png)
-
-**Administration** (users, roles, audit log) and **settings** (language, light and dark theme).
-
-![Administration](docs/screenshots/administration.png)
-![Settings, dark theme](docs/screenshots/settings_dark_theme.png)
-
-**Operations**: Grafana dashboard on MySQL, Airflow DAG for scheduled analyses, and the containers running with Docker Compose.
-
-![Grafana](docs/screenshots/grafana_operations.png)
-![Airflow](docs/screenshots/airflow_dag.png)
-![Docker containers](docs/screenshots/docker_containers.png)
-
 ## Architecture
-
-![Deployment diagram](docs/screenshots/architecture_deployment.png)
 
 ```
 frontend (Angular SPA, nginx in prod)

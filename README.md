@@ -1,8 +1,8 @@
-# DQMonitor — Data Quality Monitoring Platform
+# DQMonitor: Data Quality Monitoring Platform
 
 Enterprise data quality platform built for Enhanced Technologies: upload a dataset,
 run a configurable quality analysis against it (Spark + Great Expectations), and
-track results — scores, anomalies, trends — across your organization.
+track the results (scores, anomalies, trends) across your organization.
 
 Built during my internship at Enhanced Technologies (Rabat, July to August 2026), as part of the Data Science and Artificial Intelligence engineering program at ENSA Fès.
 
@@ -24,17 +24,17 @@ Built during my internship at Enhanced Technologies (Rabat, July to August 2026)
 
 - **Auth**: JWT access tokens (15 min) + opaque, DB-validated, rotating refresh tokens (7 days, revocable); per-account and per-IP login rate limiting; forgot/reset password via email.
 - **Datasets**: drag-and-drop upload, one-click analysis, backoff-polling status (PENDING → PROCESSING → COMPLETED/FAILED).
-- **Validation rules**: admin-managed, per-column rules (not-null, unique, regex, range, enum, required-column) that drive the Great Expectations suite built at analysis time — no rules configured falls back to not-null + no-duplicates.
+- **Validation rules**: admin-managed, per-column rules (not-null, unique, regex, range, enum, required-column) that drive the Great Expectations suite built at analysis time; when no rule is configured, it falls back to not-null + no-duplicates.
 - **Quality reports**: paginated history, drill-down detail view per check, dashboard KPIs and trend/distribution charts.
 - **Administration**: paginated user management, role assignment, audit-log viewer, and a danger zone (full database reset) gated behind a typed confirmation.
 - **Settings**: change password, switch language (persists via Transloco, RTL-aware for Arabic).
-- **i18n**: every page and dialog, not just login/register — FR/EN/AR with full RTL layout mirroring.
+- **i18n**: every page and dialog, not just login/register: FR/EN/AR with full RTL layout mirroring.
 - **Accessibility**: keyboard-navigable tables, aria-labelled icon-only buttons, described chart canvases, skip-to-content link.
 - **Anomaly explorer and correction**: anomalies listed per row, column and rule; values can be corrected in the interface, the corrected file is downloaded or re-analysed, and every correction is kept in a history.
 - **PDF export**: per-report PDF (summary + per-check table) via `GET /api/reports/{id}/pdf`.
-- **AI Assistant**: chat grounded in the platform's own data (dashboard summary, active rules, dataset/report lookups via SQL — no vector store needed for structured relational data). Provider-abstracted (`app.ai.provider`): Ollama by default (free, local, offline), or Anthropic/OpenAI via env vars only, no code change.
+- **AI Assistant**: chat grounded in the platform's own data (dashboard summary, active rules, dataset/report lookups via SQL, no vector store needed for structured relational data). Provider-abstracted (`app.ai.provider`): Ollama by default (free, local, offline), or Anthropic/OpenAI via env vars only, no code change.
 - **Scheduled analysis (Airflow)**: a DAG (`airflow/dags/scheduled_quality_analysis.py`) sweeps datasets uploaded-but-never-analyzed every 15 minutes and triggers the same analysis pipeline the manual "Analyze" button uses, via a small internal API (`/internal/datasets/pending`, `/internal/datasets/{id}/analyze`).
-- **Ops dashboards (Grafana)**: a provisioned dashboard (`grafana/provisioning/`) reading directly from MySQL via a dedicated read-only user — dataset throughput and status breakdown, quality score trend, active rules/users, and recent audit activity. Complements, rather than duplicates, the in-app Dashboard's end-user KPIs.
+- **Ops dashboards (Grafana)**: a provisioned dashboard (`grafana/provisioning/`) reading directly from MySQL via a dedicated read-only user: dataset throughput and status breakdown, quality score trend, active rules/users, and recent audit activity. Complements, rather than duplicates, the in-app Dashboard's end-user KPIs.
 
 ## Architecture
 
@@ -54,7 +54,7 @@ data-processing (FastAPI + PySpark + Great Expectations)
 POST /internal/reports (shared-secret X-Internal-Key, not JWT)
 ```
 
-The Python job owns no database credentials and never writes to MySQL directly —
+The Python job owns no database credentials and never writes to MySQL directly:
 it fetches active validation rules from the backend and posts results back over
 HTTP, so the schema has exactly one owner (the JPA layer). `DatasetService` picks
 between calling the analysis service over HTTP or spawning it via `ProcessBuilder`
@@ -84,8 +84,8 @@ all reach `healthy`.
 - Airflow UI: http://localhost:8090 (see the standalone-mode admin password with
   `docker compose logs airflow | grep password`)
 - Grafana: http://localhost:3000 (`GRAFANA_ADMIN_USER` / `GRAFANA_ADMIN_PASSWORD`)
-  — the MySQL data source and "DQMonitor - Operations" dashboard are
-  provisioned automatically, nothing to configure by hand.
+  (the MySQL data source and "DQMonitor - Operations" dashboard are
+  provisioned automatically, nothing to configure by hand).
 
 Ollama's image doesn't bundle any model - after the first `docker compose up`,
 pull one once with `docker compose exec ollama ollama pull llama3.2:3b` (or
@@ -93,7 +93,7 @@ whatever `OLLAMA_MODEL` is set to). Until a model is pulled, the AI Assistant
 returns a clear "temporarily unavailable" error rather than failing silently.
 
 If any of those default ports collide with something already running on your
-machine, override them — see the "Host port overrides" section at the bottom of
+machine, override them: see the "Host port overrides" section at the bottom of
 `.env.example` (`MYSQL_HOST_PORT`, `BACKEND_HOST_PORT`, `FRONTEND_HOST_PORT`,
 `MAILHOG_HOST_PORT`, `OLLAMA_HOST_PORT`, `AIRFLOW_HOST_PORT`, `GRAFANA_HOST_PORT`).
 
@@ -126,7 +126,7 @@ pip install -r requirements.txt
 # ANALYSIS_SERVICE_URL is left empty in this mode.
 ```
 
-Configuration is environment-driven — see `.env.example` for every variable with
+Configuration is environment-driven: see `.env.example` for every variable with
 local defaults documented in `application.properties`.
 
 ## Default admin account

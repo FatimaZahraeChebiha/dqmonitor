@@ -1,0 +1,184 @@
+{
+  "id": null,
+  "uid": "dqmonitor-ops",
+  "title": "DQMonitor - Operations",
+  "description": "Platform health at a glance: dataset throughput, quality trends, and audit activity. Complements the in-app Dashboard (which is scoped to end-user quality KPIs) with an ops-facing view over the whole database.",
+  "tags": ["dqmonitor"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": { "from": "now-30d", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Total datasets",
+      "gridPos": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+      "targets": [
+        {
+          "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+          "format": "table",
+          "rawSql": "SELECT COUNT(*) AS value FROM datasets;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" }
+    },
+    {
+      "id": 2,
+      "type": "stat",
+      "title": "Average quality score",
+      "gridPos": { "x": 6, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+      "targets": [
+        {
+          "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+          "format": "table",
+          "rawSql": "SELECT ROUND(AVG(quality_score), 1) AS value FROM quality_reports WHERE status = 'GENERATED';",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 70 },
+              { "color": "green", "value": 90 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" }
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Active users",
+      "gridPos": { "x": 12, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+      "targets": [
+        {
+          "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+          "format": "table",
+          "rawSql": "SELECT COUNT(*) AS value FROM users WHERE is_active = TRUE;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" }
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Active validation rules",
+      "gridPos": { "x": 18, "y": 0, "w": 6, "h": 4 },
+      "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+      "targets": [
+        {
+          "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+          "format": "table",
+          "rawSql": "SELECT COUNT(*) AS value FROM validation_rules WHERE is_active = TRUE;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" } }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value", "graphMode": "none" }
+    },
+    {
+      "id": 5,
+      "type": "piechart",
+      "title": "Datasets by status",
+      "gridPos": { "x": 0, "y": 4, "w": 8, "h": 8 },
+      "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+      "targets": [
+        {
+          "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+          "format": "table",
+          "rawSql": "SELECT status, COUNT(*) AS value FROM datasets GROUP BY status;",
+          "refId": "A"
+        }
+      ],
+      "options": { "legend": { "displayMode": "table", "placement": "right", "values": ["value", "percent"] } }
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Datasets uploaded per day",
+      "gridPos": { "x": 8, "y": 4, "w": 16, "h": 8 },
+      "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+      "targets": [
+        {
+          "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+          "format": "time_series",
+          "rawSql": "SELECT CAST(DATE(uploaded_at) AS DATETIME) AS time, COUNT(*) AS uploads FROM datasets GROUP BY CAST(DATE(uploaded_at) AS DATETIME) ORDER BY time;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": { "defaults": { "custom": { "drawStyle": "bars", "fillOpacity": 60 } }, "overrides": [] }
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Quality score over time (per report)",
+      "gridPos": { "x": 0, "y": 12, "w": 24, "h": 8 },
+      "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+      "targets": [
+        {
+          "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+          "format": "time_series",
+          "rawSql": "SELECT generated_at AS time, quality_score FROM quality_reports WHERE status = 'GENERATED' ORDER BY generated_at;",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "max": 100,
+          "min": 0,
+          "custom": { "drawStyle": "line", "spanNulls": true, "fillOpacity": 15 }
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 8,
+      "type": "table",
+      "title": "Active validation rules",
+      "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
+      "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+      "targets": [
+        {
+          "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+          "format": "table",
+          "rawSql": "SELECT rule_name AS Rule, column_name AS `Column`, rule_type AS Type, rule_value AS Value FROM validation_rules WHERE is_active = TRUE ORDER BY rule_name;",
+          "refId": "A"
+        }
+      ],
+      "options": { "showHeader": true }
+    },
+    {
+      "id": 9,
+      "type": "table",
+      "title": "Recent audit log activity",
+      "gridPos": { "x": 12, "y": 20, "w": 12, "h": 8 },
+      "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+      "targets": [
+        {
+          "datasource": { "type": "mysql", "uid": "dqmonitor-mysql" },
+          "format": "table",
+          "rawSql": "SELECT created_at AS Time, actor_email AS Actor, action AS Action, target_type AS `Target Type`, target_id AS `Target ID` FROM audit_logs ORDER BY created_at DESC LIMIT 20;",
+          "refId": "A"
+        }
+      ],
+      "options": { "showHeader": true }
+    }
+  ]
+}

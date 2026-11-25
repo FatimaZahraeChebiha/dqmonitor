@@ -1,0 +1,375 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+}
+
+.kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem !important;
+  border-radius: var(--dq-radius-lg) !important;
+  box-shadow: var(--dq-shadow-sm) !important;
+}
+
+.kpi-icon {
+  font-size: 1.35rem;
+  width: 1.9rem;
+  height: 1.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  flex-shrink: 0;
+}
+
+.kpi-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.kpi-label {
+  font-size: 0.7rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.kpi-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+  align-items: start;
+}
+
+.secondary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+  /* Default (stretch) is intentional here, unlike .charts-grid above - see
+     the comment on .dimensions-card/.attention-card for why. */
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 0.6rem;
+}
+
+.chart-card,
+.activity-card,
+.top-columns-card,
+.dimensions-card,
+.attention-card {
+  padding: 0.6rem !important;
+  border-radius: var(--dq-radius-lg) !important;
+  box-shadow: var(--dq-shadow-sm) !important;
+}
+
+/* .dimensions-card stretches to match .top-columns-card's row height (see
+   .dimensions-grid's flex/align-content below for why) - a short card (e.g.
+   only 4 fixed dimension rows) sitting next to a taller table still occupies
+   a grid row exactly as tall as that table, and align-items: start would
+   only change which element's background fills the leftover space (the
+   card's vs. the page's, two near-identical light greys), not whether that
+   empty zone exists at all. .attention-card is the opposite case: its
+   content count is small and highly variable, so it gets its own align-self
+   below instead, sized to content rather than stretched+centered. */
+
+.chart-card h2,
+.activity-card h2,
+.top-columns-card h2,
+.dimensions-card h2,
+.attention-card h2 {
+  margin: 0 0 0.3rem;
+  font-size: 0.85rem;
+}
+
+.attention-card {
+  /* Unlike its .activity-card row-mate, this card's content count is small
+     and highly variable (0 to a handful of datasets) - stretching it to
+     match a five-row activity table left a wide band of padding around one
+     line of text. Sized to its own content instead, same horizontal column
+     as before, just not forced to the taller sibling's height. */
+  align-self: start;
+}
+
+.dimensions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.4rem 0.6rem;
+  /* mat-card is itself a flex column (title, then this) - growing to fill
+     any extra height the row forces on the card, then centering its own
+     rows within that height, rather than sitting pinned to the top with
+     visible empty space below. */
+  flex: 1;
+  align-content: center;
+}
+
+.dimension-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.dimension-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dimension-name {
+  font-size: 0.76rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.column-name {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.8rem;
+}
+
+.pct-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 7rem;
+}
+
+.pct-cell span {
+  font-variant-numeric: tabular-nums;
+  width: 3rem;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+}
+
+.pct-bar-track {
+  flex: 1;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-variant);
+  overflow: hidden;
+}
+
+.pct-bar-fill {
+  height: 100%;
+  background: var(--dq-status-error);
+  border-radius: inherit;
+}
+
+.pct-bar-fill.success {
+  background: var(--dq-status-success);
+}
+
+.pct-bar-fill.warning {
+  background: var(--dq-status-warning);
+}
+
+.pct-bar-fill.error {
+  background: var(--dq-status-error);
+}
+
+.chart-wrap {
+  height: 130px;
+  position: relative;
+}
+
+.attention-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  max-height: 230px;
+  overflow-y: auto;
+}
+
+.attention-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.28rem 0.45rem;
+  border-radius: var(--dq-radius-md, 8px);
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.15s ease;
+}
+
+.attention-row:hover {
+  background: var(--mat-sys-surface-container);
+}
+
+.attention-row-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.attention-file {
+  font-size: 0.8rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attention-date {
+  font-size: 0.68rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.table-scroll {
+  max-height: 230px;
+  overflow-y: auto;
+  /* Same centering treatment as .dimensions-grid/.attention-list, for the
+     rarer case where this table ends up the shorter card in its row (e.g.
+     very few problematic columns next to a fuller dimensions panel). */
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: start;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 0.28rem 0.45rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+td {
+  padding: 0.32rem 0.45rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  font-size: 0.78rem;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.score {
+  font-weight: 700;
+}
+
+.score.success {
+  color: var(--dq-status-success);
+}
+
+.score.warning {
+  color: var(--dq-status-warning);
+}
+
+.score.error {
+  color: var(--dq-status-error);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.badge.success {
+  background: var(--dq-status-success-bg);
+  color: var(--dq-status-success);
+}
+
+.badge.warning {
+  background: var(--dq-status-warning-bg);
+  color: var(--dq-status-warning);
+}
+
+.badge.error {
+  background: var(--dq-status-error-bg);
+  color: var(--dq-status-error);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 1rem;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+  /* Same centering treatment as the non-empty content wrappers, so "all
+     datasets compliant" / "no activity yet" also lands in the middle of a
+     card stretched by a taller sibling instead of pinned to its top. */
+  flex: 1;
+}
+
+.empty-state mat-icon {
+  font-size: 1.6rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0;
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--mat-sys-on-surface);
+}
+
+.empty-state span {
+  font-size: 0.76rem;
+}
+
+@media (max-width: 1500px) {
+  .charts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1000px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+  .secondary-grid {
+    grid-template-columns: 1fr;
+  }
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+  .dimensions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+  .dimensions-grid {
+    grid-template-columns: 1fr;
+  }
+}

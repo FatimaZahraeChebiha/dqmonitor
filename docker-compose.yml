@@ -1,0 +1,176 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-data_quality_db}
+      GRAFANA_MYSQL_PASSWORD: ${GRAFANA_MYSQL_PASSWORD}
+    ports:
+      - "${MYSQL_HOST_PORT:-3306}:3306"
+    volumes:
+      - dqmonitor-mysql-data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-data_quality_db}
+      MYSQL_USER: root
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@dqmonitor.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4200}
+      ANALYSIS_SERVICE_URL: http://data-processing:8001
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:4200}
+      SMTP_HOST: ${SMTP_HOST:-mailhog}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_AUTH: ${SMTP_AUTH:-false}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
+      MAIL_FROM: ${MAIL_FROM:-no-reply@dqmonitor.local}
+      AI_PROVIDER: ${AI_PROVIDER:-ollama}
+      OLLAMA_BASE_URL: http://ollama:11434
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-opus-4-8}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+    ports:
+      - "${BACKEND_HOST_PORT:-8080}:8080"
+    volumes:
+      - dqmonitor-uploads:/root/DataQualityPlatform/data/input
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  data-processing:
+    build: ./data-processing
+    restart: unless-stopped
+    environment:
+      BACKEND_BASE_URL: http://backend:8080
+      INTERNAL_API_KEY: ${INTERNAL_API_KEY}
+    volumes:
+      - dqmonitor-uploads:/root/DataQualityPlatform/data/input
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    restart: unless-stopped
+    ports:
+      - "${MAILHOG_HOST_PORT:-8025}:8025"
+
+  # Local/free-by-default AI provider (see app.ai.provider). Models aren't bundled in
+  # the image - after the first `docker compose up`, pull one once with:
+  #   docker compose exec ollama ollama pull llama3.2:3b
+  # Switching to Anthropic/OpenAI in production needs no change here - only AI_PROVIDER.
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    volumes:
+      - dqmonitor-ollama-data:/root/.ollama
+    ports:
+      - "${OLLAMA_HOST_PORT:-11434}:11434"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_HOST_PORT:-4200}:80"
+
+  # Scheduled orchestration: sweeps up datasets uploaded-but-never-analyzed every
+  # 15 minutes via the backend's internal API (see airflow/dags/). `standalone`
+  # runs the webserver+scheduler+triggerer in one process against a local SQLite
+  # metadata DB - appropriate for this project's scale; a separate Postgres
+  # metadata store would be pure overhead here.
+  airflow:
+    image: apache/airflow:2.10.4
+    restart: unless-stopped
+    # Standalone mode leaves a stale airflow-webserver.pid behind in the
+    # persisted volume; on restart the new webserver sees it, assumes another
+    # instance is already running, and refuses to start. Clearing it first
+    # makes every restart start clean.
+    command: bash -c "rm -f /opt/airflow/airflow-webserver.pid; exec airflow standalone"
+    depends_on:
+      backend:
+        condition: service_healthy
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      BACKEND_INTERNAL_URL: http://backend:8080/internal
+      BACKEND_INTERNAL_KEY: ${INTERNAL_API_KEY}
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - dqmonitor-airflow-data:/opt/airflow
+    ports:
+      - "${AIRFLOW_HOST_PORT:-8090}:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  # Ops-facing dashboards reading directly from MySQL (read-only 'grafana' user,
+  # provisioned by mysql-init/) - complements the in-app Dashboard, which is
+  # scoped to end-user quality KPIs, not platform-wide operational metrics.
+  grafana:
+    image: grafana/grafana-oss:11.4.0
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GRAFANA_MYSQL_PASSWORD: ${GRAFANA_MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-data_quality_db}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - dqmonitor-grafana-data:/var/lib/grafana
+    ports:
+      - "${GRAFANA_HOST_PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/health | grep -q '\"database\": \"ok\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+volumes:
+  dqmonitor-mysql-data:
+  dqmonitor-uploads:
+  dqmonitor-ollama-data:
+  dqmonitor-airflow-data:
+  dqmonitor-grafana-data:

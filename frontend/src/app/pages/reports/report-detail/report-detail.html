@@ -1,0 +1,91 @@
+@if (report(); as r) {
+  <div class="page">
+    <div class="toolbar">
+      <button mat-button class="back-btn" (click)="back()">
+        <mat-icon>arrow_back</mat-icon>
+        {{ 'common.back' | transloco }}
+      </button>
+      <button mat-stroked-button color="primary" (click)="exportPdf(r.id)" [disabled]="isExporting()">
+        @if (isExporting()) {
+          <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+          <mat-icon aria-hidden="true">picture_as_pdf</mat-icon>
+        }
+        {{ 'reports.detail.exportPdf' | transloco }}
+      </button>
+    </div>
+
+    <div class="page-header">
+      <h1>{{ r.dataset.fileName }}</h1>
+      <p>{{ r.generatedAt | localizedDate: 'medium' : language.currentLang() }}</p>
+    </div>
+
+    <div class="summary-grid">
+      <mat-card class="summary-card">
+        <span class="label">{{ 'reports.column.score' | transloco }}</span>
+        <span class="value" [class]="scoreClass(r.qualityScore)">{{ r.qualityScore }}%</span>
+      </mat-card>
+      <mat-card class="summary-card">
+        <span class="label">{{ 'reports.column.validRows' | transloco }}</span>
+        <span class="value success">{{ r.validRows }}</span>
+      </mat-card>
+      <mat-card class="summary-card">
+        <span class="label">{{ 'reports.column.invalidRows' | transloco }}</span>
+        <span class="value error">{{ r.invalidRows }}</span>
+      </mat-card>
+      <mat-card class="summary-card">
+        <span class="label">{{ 'reports.column.totalRows' | transloco }}</span>
+        <span class="value">{{ r.totalRows }}</span>
+      </mat-card>
+    </div>
+
+    <mat-card class="table-card">
+      <h2>{{ 'reports.detail.checksTitle' | transloco }}</h2>
+      <div class="table-scroll-x">
+        <table>
+          <thead>
+            <tr>
+              <th>{{ 'reports.detail.checkName' | transloco }}</th>
+              <th>{{ 'reports.detail.result' | transloco }}</th>
+              <th>{{ 'reports.detail.unexpectedCount' | transloco }}</th>
+              <th>{{ 'reports.detail.unexpectedPct' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (check of checks(); track check.check_name) {
+              <tr>
+                <td class="check-name">{{ check.check_name }}</td>
+                <td>
+                  <span class="badge" [class.success]="check.success" [class.error]="!check.success">
+                    <mat-icon>{{ check.success ? 'check_circle' : 'cancel' }}</mat-icon>
+                    {{ (check.success ? 'reports.detail.pass' : 'reports.detail.fail') | transloco }}
+                  </span>
+                </td>
+                <td>{{ check.unexpected_count }}</td>
+                <td>{{ check.unexpected_pct }}%</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </mat-card>
+
+    <mat-card class="table-card explorer-cta-card">
+      <div class="explorer-cta-text">
+        <mat-icon aria-hidden="true">fact_check</mat-icon>
+        <div>
+          <h2>{{ 'reports.detail.explorerCtaTitle' | transloco }}</h2>
+          @if (r.invalidRows > 0) {
+            <p>{{ 'reports.detail.explorerCtaSubtitle' | transloco: { count: r.invalidRows } }}</p>
+          } @else {
+            <p>{{ 'reports.detail.explorerCtaSubtitleClean' | transloco }}</p>
+          }
+        </div>
+      </div>
+      <a mat-flat-button color="primary" [routerLink]="['/reports', r.id, 'anomalies']">
+        {{ 'reports.detail.explorerCtaButton' | transloco }}
+        <mat-icon aria-hidden="true">arrow_forward</mat-icon>
+      </a>
+    </mat-card>
+  </div>
+}

@@ -1,0 +1,118 @@
+<div class="page">
+  <div class="page-header">
+    <h1>{{ 'datasets.title' | transloco }}</h1>
+    <p>{{ 'datasets.subtitle' | transloco }}</p>
+  </div>
+
+  <mat-card class="upload-card">
+    <div
+      class="dropzone"
+      [class.dragover]="isDragging()"
+      (click)="fileInput.click()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave()"
+      (drop)="onDrop($event)"
+    >
+      <mat-icon>cloud_upload</mat-icon>
+      <div class="dropzone-text">
+        <h3>{{ 'datasets.dropzoneTitle' | transloco }}</h3>
+        <p>{{ 'datasets.dropzoneSubtitle' | transloco }}</p>
+      </div>
+      <span class="formats">{{ 'datasets.supportedFormats' | transloco }}</span>
+      <input #fileInput type="file" accept=".csv,.xlsx,.xls,.json" (change)="onFileSelected($event)" hidden />
+    </div>
+
+    @if (selectedFile(); as file) {
+      <div class="selected-file">
+        <mat-icon>description</mat-icon>
+        <div class="file-meta">
+          <span class="file-name">{{ file.name }}</span>
+          <span class="file-size">{{ formatSize(file.size) }}</span>
+        </div>
+        <button mat-icon-button (click)="removeSelectedFile()" [attr.aria-label]="'common.close' | transloco">
+          <mat-icon aria-hidden="true">close</mat-icon>
+        </button>
+        <button mat-flat-button color="primary" [disabled]="isUploading()" (click)="upload()">
+          @if (isUploading()) {
+            <mat-spinner diameter="18"></mat-spinner>
+          } @else {
+            {{ 'datasets.uploadButton' | transloco }}
+          }
+        </button>
+      </div>
+    }
+  </mat-card>
+
+  <mat-card class="table-card">
+    @if (datasets().length === 0) {
+      <div class="empty-state">
+        <mat-icon>folder_open</mat-icon>
+        <p>{{ 'datasets.emptyTitle' | transloco }}</p>
+        <span>{{ 'datasets.emptySubtitle' | transloco }}</span>
+      </div>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'datasets.column.file' | transloco }}</th>
+            <th>{{ 'datasets.column.size' | transloco }}</th>
+            <th>{{ 'datasets.column.uploadedBy' | transloco }}</th>
+            <th>{{ 'datasets.column.uploadedAt' | transloco }}</th>
+            <th>{{ 'datasets.column.status' | transloco }}</th>
+            <th>{{ 'common.actions' | transloco }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (dataset of datasets(); track dataset.id) {
+            <tr>
+              <td>{{ dataset.fileName }}</td>
+              <td>{{ formatSize(dataset.fileSize) }}</td>
+              <td>{{ dataset.uploadedByUsername ?? '—' }}</td>
+              <td>{{ dataset.uploadedAt | localizedDate: 'short' : language.currentLang() }}</td>
+              <td>
+                <span class="badge" [class]="'status-' + dataset.status.toLowerCase()">
+                  @if (dataset.status === 'PROCESSING') {
+                    <mat-spinner diameter="14"></mat-spinner>
+                  }
+                  {{ 'datasets.status.' + dataset.status | transloco }}
+                </span>
+              </td>
+              <td class="actions">
+                <button
+                  mat-icon-button
+                  [matTooltip]="'datasets.analyzeButton' | transloco"
+                  [attr.aria-label]="'datasets.analyzeButton' | transloco"
+                  [disabled]="dataset.status === 'PROCESSING'"
+                  (click)="analyze(dataset)"
+                >
+                  <mat-icon aria-hidden="true">play_circle</mat-icon>
+                </button>
+                @if (dataset.status === 'COMPLETED') {
+                  <a mat-icon-button routerLink="/reports" [matTooltip]="'reports.title' | transloco" [attr.aria-label]="'reports.title' | transloco">
+                    <mat-icon aria-hidden="true">assessment</mat-icon>
+                  </a>
+                }
+                <button
+                  mat-icon-button
+                  color="warn"
+                  [matTooltip]="'common.delete' | transloco"
+                  [attr.aria-label]="'common.delete' | transloco"
+                  (click)="delete(dataset)"
+                >
+                  <mat-icon aria-hidden="true">delete_outline</mat-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <mat-paginator
+        [length]="total()"
+        [pageSize]="pageSize()"
+        [pageIndex]="page()"
+        [pageSizeOptions]="[10, 25, 50]"
+        (page)="loadDatasets($event)"
+      ></mat-paginator>
+    }
+  </mat-card>
+</div>

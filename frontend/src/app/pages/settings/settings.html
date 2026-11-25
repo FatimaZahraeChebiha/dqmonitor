@@ -1,0 +1,99 @@
+<div class="page">
+  <div class="page-header">
+    <h1>{{ 'settings.title' | transloco }}</h1>
+  </div>
+
+  <div class="grid">
+    <mat-card class="panel">
+      <h2>
+        <mat-icon>account_circle</mat-icon>
+        {{ 'settings.profileTitle' | transloco }}
+      </h2>
+      @if (auth.currentUser(); as user) {
+        <dl>
+          <dt>{{ 'admin.fields.username' | transloco }}</dt>
+          <dd>{{ user.username }}</dd>
+          <dt>{{ 'admin.fields.email' | transloco }}</dt>
+          <dd>{{ user.email }}</dd>
+          <dt>{{ 'settings.profileRole' | transloco }}</dt>
+          <dd>{{ 'admin.role.' + user.role | transloco }}</dd>
+          <dt>{{ 'settings.profileMember' | transloco }}</dt>
+          <dd>{{ user.createdAt | localizedDate: 'longDate' : language.currentLang() }}</dd>
+        </dl>
+      }
+    </mat-card>
+
+    <mat-card class="panel">
+      <h2>
+        <mat-icon>language</mat-icon>
+        {{ 'settings.languageTitle' | transloco }}
+      </h2>
+      <p class="hint">{{ 'settings.languageDescription' | transloco }}</p>
+      <div class="lang-options">
+        @for (lang of languages; track lang.code) {
+          <button
+            class="lang-option"
+            [class.selected]="language.currentLang() === lang.code"
+            (click)="setLanguage(lang.code)"
+          >
+            {{ lang.label }}
+          </button>
+        }
+      </div>
+    </mat-card>
+
+    <mat-card class="panel">
+      <h2>
+        <mat-icon>{{ theme.currentTheme() === 'dark' ? 'dark_mode' : 'light_mode' }}</mat-icon>
+        {{ 'settings.appearanceTitle' | transloco }}
+      </h2>
+      <p class="hint">{{ 'settings.appearanceDescription' | transloco }}</p>
+      <div class="lang-options">
+        @for (t of themes; track t.code) {
+          <button
+            class="lang-option"
+            [class.selected]="theme.currentTheme() === t.code"
+            [attr.aria-pressed]="theme.currentTheme() === t.code"
+            (click)="setTheme(t.code)"
+          >
+            <mat-icon aria-hidden="true">{{ t.icon }}</mat-icon>
+            {{ t.labelKey | transloco }}
+          </button>
+        }
+      </div>
+    </mat-card>
+
+    <mat-card class="panel">
+      <h2>
+        <mat-icon>lock</mat-icon>
+        {{ 'settings.passwordTitle' | transloco }}
+      </h2>
+
+      <div class="password-form">
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'settings.currentPassword' | transloco }}</mat-label>
+          <input matInput type="password" [(ngModel)]="currentPassword" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'settings.newPassword' | transloco }}</mat-label>
+          <input matInput type="password" [(ngModel)]="newPassword" />
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{ 'settings.confirmNewPassword' | transloco }}</mat-label>
+          <input matInput type="password" [(ngModel)]="confirmNewPassword" (keyup.enter)="changePassword()" />
+        </mat-form-field>
+      </div>
+
+      @if (passwordErrorKey()) {
+        <div class="error-message">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ passwordErrorKey() | transloco }}</span>
+        </div>
+      }
+
+      <button mat-flat-button color="primary" [disabled]="isSaving()" (click)="changePassword()">
+        {{ 'settings.passwordSaveButton' | transloco }}
+      </button>
+    </mat-card>
+  </div>
+</div>

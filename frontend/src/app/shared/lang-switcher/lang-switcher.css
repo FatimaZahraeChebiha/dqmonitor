@@ -1,0 +1,31 @@
+/* Visual style only - positioning (fixed on auth pages, inline in the header) is
+   the consuming page's responsibility, targeting the <app-lang-switcher> host tag. */
+.lang-switcher {
+  display: flex;
+  gap: 0.25rem;
+  background: var(--mat-sys-surface-container);
+  border-radius: 999px;
+  padding: 0.25rem;
+}
+
+.lang-btn {
+  border: none;
+  background: none;
+  border-radius: 999px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--mat-sys-on-surface-variant);
+  font-family: inherit;
+}
+
+.lang-btn:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
+}
+
+.lang-btn.active {
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+}

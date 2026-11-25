@@ -1,0 +1,175 @@
+<div class="page">
+  <div class="page-header">
+    <h1>{{ 'nav.administration' | transloco }}</h1>
+  </div>
+
+  <mat-tab-group>
+    <mat-tab [label]="'admin.usersTab' | transloco">
+      <div class="tab-content">
+        <div class="stats-grid">
+          <mat-card class="stat-card">
+            <mat-icon>group</mat-icon>
+            <div>
+              <span class="stat-value">{{ stats().total }}</span>
+              <span class="stat-label">{{ 'admin.statsTotalUsers' | transloco }}</span>
+            </div>
+          </mat-card>
+          <mat-card class="stat-card">
+            <mat-icon>admin_panel_settings</mat-icon>
+            <div>
+              <span class="stat-value">{{ stats().admins }}</span>
+              <span class="stat-label">{{ 'admin.statsAdmins' | transloco }}</span>
+            </div>
+          </mat-card>
+          <mat-card class="stat-card">
+            <mat-icon>person</mat-icon>
+            <div>
+              <span class="stat-value">{{ stats().users }}</span>
+              <span class="stat-label">{{ 'admin.statsUsers' | transloco }}</span>
+            </div>
+          </mat-card>
+        </div>
+
+        <mat-card class="table-card">
+          <div class="card-header">
+            <h2>{{ 'admin.usersTab' | transloco }}</h2>
+            <button mat-flat-button color="primary" (click)="openCreateUser()">
+              <mat-icon>person_add</mat-icon>
+              {{ 'admin.createUserButton' | transloco }}
+            </button>
+          </div>
+
+          @if (users().length === 0) {
+            <div class="empty-state">
+              <mat-icon>group_off</mat-icon>
+              <p>{{ 'admin.emptyTitle' | transloco }}</p>
+            </div>
+          } @else {
+            <table>
+              <thead>
+                <tr>
+                  <th>{{ 'admin.column.id' | transloco }}</th>
+                  <th>{{ 'admin.column.username' | transloco }}</th>
+                  <th>{{ 'admin.column.email' | transloco }}</th>
+                  <th>{{ 'admin.column.role' | transloco }}</th>
+                  <th>{{ 'admin.column.status' | transloco }}</th>
+                  <th>{{ 'common.actions' | transloco }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (user of users(); track user.id) {
+                  <tr>
+                    <td>#{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                      <span class="badge role" [class.admin]="user.role === 'ADMIN'">
+                        {{ 'admin.role.' + user.role | transloco }}
+                      </span>
+                    </td>
+                    <td>
+                      <span class="badge" [class.active]="user.isActive" [class.inactive]="!user.isActive">
+                        {{ (user.isActive ? 'common.active' : 'common.inactive') | transloco }}
+                      </span>
+                    </td>
+                    <td>
+                      <button
+                        mat-icon-button
+                        color="warn"
+                        [disabled]="user.id === auth.currentUser()?.id"
+                        [attr.aria-label]="'common.delete' | transloco"
+                        (click)="deleteUser(user)"
+                      >
+                        <mat-icon aria-hidden="true">delete_outline</mat-icon>
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+            <mat-paginator
+              [length]="usersTotal()"
+              [pageSize]="usersPageSize()"
+              [pageIndex]="usersPage()"
+              [pageSizeOptions]="[10, 20, 50]"
+              (page)="load($event)"
+            ></mat-paginator>
+          }
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <mat-tab [label]="'admin.auditTab' | transloco">
+      <div class="tab-content">
+        <mat-card class="table-card">
+          <div class="card-header">
+            <h2>{{ 'admin.auditTab' | transloco }}</h2>
+          </div>
+
+          @if (auditLogs().length === 0) {
+            <div class="empty-state">
+              <mat-icon>history</mat-icon>
+              <p>{{ 'admin.audit.emptyTitle' | transloco }}</p>
+            </div>
+          } @else {
+            <div class="table-scroll-x">
+              <table>
+                <thead>
+                  <tr>
+                    <th>{{ 'admin.audit.column.date' | transloco }}</th>
+                    <th>{{ 'admin.audit.column.actor' | transloco }}</th>
+                    <th>{{ 'admin.audit.column.action' | transloco }}</th>
+                    <th>{{ 'admin.audit.column.target' | transloco }}</th>
+                    <th>{{ 'admin.audit.column.details' | transloco }}</th>
+                    <th>{{ 'admin.audit.column.ip' | transloco }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (entry of auditLogs(); track entry.id) {
+                    <tr>
+                      <td>{{ entry.createdAt | localizedDate: 'short' : language.currentLang() }}</td>
+                      <td>{{ entry.actorEmail ?? '—' }}</td>
+                      <td>
+                        <span class="badge" [class]="auditActionClass(entry.action)">
+                          {{ 'admin.audit.action.' + entry.action | transloco }}
+                        </span>
+                      </td>
+                      <td>{{ entry.targetType ? entry.targetType + ' #' + entry.targetId : '—' }}</td>
+                      <td class="details-cell">{{ entry.details ?? '—' }}</td>
+                      <td>{{ entry.ipAddress ?? '—' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <mat-paginator
+              [length]="auditLogsTotal()"
+              [pageSize]="auditLogsPageSize()"
+              [pageIndex]="auditLogsPage()"
+              [pageSizeOptions]="[10, 25, 50, 100]"
+              (page)="loadAuditLogs($event)"
+            ></mat-paginator>
+          }
+        </mat-card>
+      </div>
+    </mat-tab>
+
+    <mat-tab [label]="'admin.dangerZoneTab' | transloco">
+      <div class="tab-content">
+        <mat-card class="danger-card">
+          <div class="danger-icon">
+            <mat-icon aria-hidden="true">warning</mat-icon>
+          </div>
+          <div class="danger-body">
+            <h2>{{ 'admin.dangerZone.title' | transloco }}</h2>
+            <p>{{ 'admin.dangerZone.description' | transloco }}</p>
+            <button mat-flat-button color="warn" (click)="resetDatabase()">
+              <mat-icon aria-hidden="true">delete_forever</mat-icon>
+              {{ 'admin.dangerZone.resetButton' | transloco }}
+            </button>
+          </div>
+        </mat-card>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

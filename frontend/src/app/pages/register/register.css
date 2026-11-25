@@ -1,0 +1,52 @@
+/* Compaction overrides scoped to the Register page only - Angular's view
+   encapsulation keeps this out of login/forgot-password/reset-password,
+   which share auth-page.css (loaded alongside this file) but not this one.
+
+   The card was taller than its content needed mostly because Angular
+   Material reserves a fixed-height "subscript" strip below every field for
+   hints/errors, even when none is shown - this form never displays a
+   per-field message (validation only ever surfaces as the single
+   .error-message banner above the submit button), so that reserved space
+   was always empty. --mat-form-field-container-height/vertical-padding are
+   Material's own documented theming tokens for the field itself; the
+   subscript strip has no such token, so it needs a scoped ::ng-deep override
+   instead - :host keeps it from leaking into the other auth pages, which
+   render as separate component trees and are never a descendant of this
+   one. */
+
+.auth-card {
+  padding: 1.1rem 1.5rem;
+}
+
+.subtitle {
+  margin: 0 0 0.65rem;
+}
+
+mat-form-field {
+  --mat-form-field-container-height: 48px;
+  --mat-form-field-container-vertical-padding: 10px;
+}
+
+:host ::ng-deep .mat-mdc-form-field-bottom-align::before {
+  height: 4px;
+}
+
+/* Card padding/subtitle above shrink the space around the fields; these two
+   do the same for the gaps below them - the submit button and the "already
+   have an account" link both carry a larger top margin in the shared
+   auth-page.css (tuned for login's shorter 2-field form), which reads as
+   proportionally too generous once this card is otherwise this compact. */
+.submit-btn {
+  margin-top: 0.1rem;
+}
+
+.switch-link {
+  margin-top: 0.75rem;
+}
+
+/* The shared auth-page.css gives the copyright note a 2rem top margin, sized
+   for login's shorter card - with this card now more compact, that much
+   space pushes the note below the fold on common viewport heights. */
+.footer-note {
+  margin-top: 0.75rem;
+}

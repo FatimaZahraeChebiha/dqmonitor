@@ -1,0 +1,210 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page-header h1 {
+  margin: 0 0 0.15rem;
+  font-size: 1.5rem;
+}
+
+.page-header p {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.upload-card,
+.table-card {
+  border-radius: var(--dq-radius-lg) !important;
+  box-shadow: var(--dq-shadow-sm) !important;
+  padding: 0.9rem !important;
+}
+
+/* Was a very tall centered drop target (2.5rem vertical padding + a 2.5rem
+   icon) - the same affordance reads just as clearly compact, and this card
+   was the single biggest contributor to the page needing to scroll before
+   the file list was even visible. */
+.dropzone {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border: 2px dashed var(--mat-sys-outline-variant);
+  border-radius: var(--dq-radius-md);
+  padding: 0.85rem 1.25rem;
+  cursor: pointer;
+  text-align: start;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.dropzone:hover,
+.dropzone.dragover {
+  border-color: var(--mat-sys-primary);
+  background: var(--mat-sys-primary-container);
+}
+
+.dropzone mat-icon {
+  font-size: 1.6rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  color: var(--mat-sys-primary);
+  flex-shrink: 0;
+}
+
+.dropzone-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.dropzone h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.dropzone p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.formats {
+  font-size: 0.72rem;
+  color: var(--mat-sys-on-surface-variant);
+  margin-inline-start: auto;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.selected-file {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--dq-radius-md);
+  background: var(--mat-sys-surface-container);
+}
+
+.file-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-size {
+  font-size: 0.78rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: start;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 0.45rem 0.7rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+td {
+  padding: 0.5rem 0.7rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  font-size: 0.86rem;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.actions {
+  display: flex;
+  gap: 0.15rem;
+  white-space: nowrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.status-pending {
+  background: var(--dq-status-pending-bg);
+  color: var(--dq-status-pending);
+}
+
+.status-processing {
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.status-completed {
+  background: var(--dq-status-success-bg);
+  color: var(--dq-status-success);
+}
+
+.status-failed {
+  background: var(--dq-status-error-bg);
+  color: var(--dq-status-error);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 2.5rem 1rem;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.empty-state span {
+  font-size: 0.85rem;
+}
+
+@media (max-width: 560px) {
+  .dropzone {
+    flex-direction: column;
+    text-align: center;
+    padding: 1.1rem 1rem;
+  }
+  .formats {
+    margin-inline-start: 0;
+  }
+}

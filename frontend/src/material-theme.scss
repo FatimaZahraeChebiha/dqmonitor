@@ -1,0 +1,83 @@
+// Material 3 theme for DQMonitor, built from the Enhanced Technologies logo blue
+// (#3B6EA8) via `ng generate @angular/material:m3-theme` - see theme-colors.scss
+// for the generated tonal palette. Replaces the stock azure/blue Material
+// palettes the project started with, so the app's color identity actually
+// comes from the brand rather than a generic Material default.
+@use '@angular/material' as mat;
+@use './theme-colors' as theme;
+
+html {
+  height: 100%;
+  color-scheme: light;
+
+  @include mat.theme(
+    (
+      color: (
+        theme-type: light,
+        primary: theme.$primary-palette,
+        tertiary: theme.$tertiary-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+
+  // Semantic status colors used across KPI cards, badges and charts - kept
+  // separate from the Material palette so they stay legible against both the
+  // brand blue and each other (dataviz-style categorical usage, not theming).
+  --dq-status-success: #1e8e5a;
+  --dq-status-success-bg: #e6f4ec;
+  --dq-status-warning: #b7791f;
+  --dq-status-warning-bg: #fbf0dd;
+  --dq-status-error: #c62828;
+  --dq-status-error-bg: #fbe9e7;
+  --dq-status-pending: #5c5e63;
+  --dq-status-pending-bg: #eceef1;
+
+  --dq-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.08);
+  --dq-shadow-md: 0 2px 6px rgba(16, 24, 40, 0.08), 0 4px 12px rgba(16, 24, 40, 0.06);
+  --dq-radius-md: 12px;
+  --dq-radius-lg: 16px;
+}
+
+// Dark mode: same brand palette, only theme-type flips - Material 3 tonal
+// palettes already contain the full 0-100 lightness range, so re-mapping
+// which tones back the surface/text/primary roles is enough on its own to
+// re-theme every component that reads --mat-sys-* tokens (which is nearly
+// everything in this app). Only the hand-authored --dq-* tokens below need
+// their own explicit dark values, since they're outside Material's token set.
+html.dark-theme {
+  color-scheme: dark;
+
+  @include mat.theme(
+    (
+      color: (
+        theme-type: dark,
+        primary: theme.$primary-palette,
+        tertiary: theme.$tertiary-palette,
+      ),
+    )
+  );
+
+  --dq-status-success: #34d399;
+  --dq-status-success-bg: #0f2a20;
+  --dq-status-warning: #fbbf24;
+  --dq-status-warning-bg: #2e2410;
+  --dq-status-error: #f87171;
+  --dq-status-error-bg: #2c1212;
+  --dq-status-pending: #a1a1aa;
+  --dq-status-pending-bg: #27272a;
+
+  // Shadows read as pure darkening against a light surface; against a dark
+  // surface they need more opacity to still register as "elevated" at all.
+  --dq-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+  --dq-shadow-md: 0 2px 6px rgba(0, 0, 0, 0.55), 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+body {
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  height: 100%;
+}

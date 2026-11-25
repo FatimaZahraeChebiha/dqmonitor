@@ -1,0 +1,26 @@
+/* MatDialog autofocuses the first field on open; on this dialog that was
+   scrolling the whole dialog surface (title included) rather than just the
+   content, clipping the top of "Nom complet"'s floating outline label - the
+   same root cause already fixed on the rule-creation dialog. Giving
+   .mat-mdc-dialog-content its own top headroom and explicit max-height makes
+   IT the scrollable element instead, so the title/label stay fully visible.
+   Field sizes, gaps and overall spacing are untouched. */
+:host ::ng-deep .mat-mdc-dialog-title {
+  margin: 0 !important;
+}
+
+:host ::ng-deep .mat-mdc-dialog-content {
+  padding-top: 1.25rem !important;
+  max-height: 75vh;
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 380px;
+}
+
+.full-width {
+  width: 100%;
+}

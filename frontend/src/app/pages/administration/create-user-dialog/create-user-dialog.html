@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>{{ 'admin.createUserTitle' | transloco }}</h2>
+
+<mat-dialog-content class="form-content">
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'admin.fields.username' | transloco }}</mat-label>
+    <input matInput [(ngModel)]="form.username" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'admin.fields.email' | transloco }}</mat-label>
+    <input matInput type="email" [(ngModel)]="form.email" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'admin.fields.password' | transloco }}</mat-label>
+    <input matInput type="password" [(ngModel)]="form.password" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'admin.fields.role' | transloco }}</mat-label>
+    <mat-select [(ngModel)]="form.role">
+      @for (role of roles; track role) {
+        <mat-option [value]="role">{{ 'admin.role.' + role | transloco }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">{{ 'common.cancel' | transloco }}</button>
+  <button mat-flat-button color="primary" [disabled]="!isValid" (click)="save()">
+    {{ 'common.create' | transloco }}
+  </button>
+</mat-dialog-actions>

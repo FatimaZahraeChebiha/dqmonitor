@@ -1,0 +1,88 @@
+<div class="page">
+  <div class="toolbar">
+    <button mat-button class="back-btn" (click)="back()">
+      <mat-icon>arrow_back</mat-icon>
+      {{ 'common.back' | transloco }}
+    </button>
+  </div>
+
+  @if (loadError()) {
+    <mat-card class="table-card">
+      <div class="empty-state">
+        <mat-icon>error_outline</mat-icon>
+        <p>{{ 'reports.compare.loadErrorTitle' | transloco }}</p>
+        <span>{{ 'reports.compare.loadErrorSubtitle' | transloco }}</span>
+      </div>
+    </mat-card>
+  } @else if (reportA() && reportB(); as reports) {
+    <div class="page-header">
+      <h1>{{ 'reports.compare.title' | transloco }}</h1>
+      <p>{{ 'reports.compare.subtitle' | transloco }}</p>
+    </div>
+
+    <div class="summary-grid">
+      <mat-card class="summary-card">
+        <span class="label">{{ 'reports.compare.before' | transloco }}</span>
+        <span class="file-name">{{ reportA()!.dataset.fileName }}</span>
+        <span class="date">{{ reportA()!.generatedAt | localizedDate: 'medium' : language.currentLang() }}</span>
+        <span class="value" [class]="scoreClass(reportA()!.qualityScore)">{{ reportA()!.qualityScore }}%</span>
+      </mat-card>
+
+      <div class="delta-cell">
+        <mat-icon aria-hidden="true">trending_flat</mat-icon>
+        <span
+          class="delta-value"
+          [class.success]="scoreDelta() > 0"
+          [class.error]="scoreDelta() < 0"
+        >{{ scoreDelta() > 0 ? '+' : '' }}{{ scoreDelta() }}%</span>
+      </div>
+
+      <mat-card class="summary-card">
+        <span class="label">{{ 'reports.compare.after' | transloco }}</span>
+        <span class="file-name">{{ reportB()!.dataset.fileName }}</span>
+        <span class="date">{{ reportB()!.generatedAt | localizedDate: 'medium' : language.currentLang() }}</span>
+        <span class="value" [class]="scoreClass(reportB()!.qualityScore)">{{ reportB()!.qualityScore }}%</span>
+      </mat-card>
+    </div>
+
+    <mat-card class="table-card">
+      <h2>{{ 'reports.compare.checksTitle' | transloco }}</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'reports.detail.checkName' | transloco }}</th>
+            <th>{{ 'reports.compare.before' | transloco }}</th>
+            <th>{{ 'reports.compare.after' | transloco }}</th>
+            <th>{{ 'reports.compare.evolution' | transloco }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows(); track row.checkName) {
+            <tr>
+              <td class="check-name">{{ row.checkName }}</td>
+              <td>
+                @if (row.before) {
+                  {{ row.before.unexpected_count }} {{ 'reports.compare.anomaliesSuffix' | transloco }}
+                } @else {
+                  <span class="muted">{{ 'reports.compare.notPresent' | transloco }}</span>
+                }
+              </td>
+              <td>
+                @if (row.after) {
+                  {{ row.after.unexpected_count }} {{ 'reports.compare.anomaliesSuffix' | transloco }}
+                } @else {
+                  <span class="muted">{{ 'reports.compare.notPresent' | transloco }}</span>
+                }
+              </td>
+              <td>
+                <span class="badge" [class]="badgeClass(row.status)">
+                  {{ statusLabelKey(row.status) | transloco }}
+                </span>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </mat-card>
+  }
+</div>

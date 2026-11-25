@@ -1,0 +1,8 @@
+pyspark==4.1.1
+great_expectations==1.18.2
+requests>=2.32
+fastapi==0.139.2
+uvicorn[standard]==0.38.0
+pytest==8.3.4
+pandas==2.2.3
+openpyxl==3.1.5

@@ -1,0 +1,623 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.toolbar {
+  display: flex;
+  min-height: 0;
+}
+
+.back-btn mat-icon {
+  margin-inline-end: 0.25rem;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.page-header h1 {
+  margin: 0 0 0.15rem;
+  font-size: 1.5rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.corrected-note {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: -0.5rem 0 0;
+  font-size: 0.85rem;
+  color: var(--dq-status-success);
+}
+
+.corrected-note mat-icon {
+  font-size: 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.history-toggle {
+  margin-inline-start: auto;
+}
+
+.history-card {
+  border-radius: var(--dq-radius-lg) !important;
+  box-shadow: var(--dq-shadow-sm) !important;
+  padding: 1.1rem 1.25rem !important;
+}
+
+.history-card h2 {
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-table th {
+  text-align: start;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.history-table td {
+  padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  font-size: 0.82rem;
+}
+
+.history-table .old-value {
+  color: var(--dq-status-error);
+  text-decoration: line-through;
+}
+
+.history-table .new-value {
+  color: var(--dq-status-success);
+  font-weight: 600;
+}
+
+.page-header p {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.loading-state {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+.reanalyze-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1.5rem !important;
+  text-align: center;
+  border-radius: var(--dq-radius-lg) !important;
+  box-shadow: var(--dq-shadow-sm) !important;
+}
+
+.reanalyze-card mat-icon {
+  font-size: 2.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.6;
+}
+
+.reanalyze-card p {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.reanalyze-card span {
+  margin: 0 0 0.5rem;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.88rem;
+  max-width: 32rem;
+}
+
+/* Synthèse */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.75rem !important;
+  border-radius: var(--dq-radius-lg) !important;
+  box-shadow: var(--dq-shadow-sm) !important;
+}
+
+.stat-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.stat-icon {
+  flex-shrink: 0;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon mat-icon {
+  font-size: 1rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+.stat-icon.danger {
+  background: var(--dq-status-error-bg);
+  color: var(--dq-status-error);
+}
+
+.stat-icon.info {
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.stat-icon.tertiary {
+  background: var(--mat-sys-tertiary-container, var(--mat-sys-secondary-container));
+  color: var(--mat-sys-on-tertiary-container, var(--mat-sys-on-secondary-container));
+}
+
+.stat-icon.on-tint {
+  background: color-mix(in srgb, var(--mat-sys-on-primary-container) 14%, transparent);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.stat-label {
+  font-size: 0.74rem;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.stat-card.root-cause {
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.root-cause-text {
+  font-size: 0.83rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Regroupement */
+.group-card {
+  border-radius: var(--dq-radius-lg) !important;
+  box-shadow: var(--dq-shadow-sm) !important;
+  padding: 0.65rem 0.9rem !important;
+}
+
+.group-tabs {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.group-tab {
+  border: none;
+  background: var(--mat-sys-surface-container);
+  color: var(--mat-sys-on-surface-variant);
+  padding: 0.32rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.group-tab.active {
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+}
+
+.group-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  max-height: 160px;
+  overflow-y: auto;
+}
+
+.group-row {
+  display: grid;
+  grid-template-columns: 9rem 1fr 3rem;
+  align-items: center;
+  gap: 0.6rem;
+  border: none;
+  background: none;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--dq-radius-md, 8px);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: start;
+}
+
+.group-row:hover {
+  background: var(--mat-sys-surface-container);
+}
+
+.group-row.selected {
+  background: var(--mat-sys-primary-container);
+}
+
+.group-key {
+  font-size: 0.85rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.group-bar-track {
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-variant);
+  overflow: hidden;
+}
+
+.group-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--mat-sys-primary);
+  border-radius: inherit;
+}
+
+.group-count {
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Filtres - une seule barre horizontale forcée (nowrap, pas wrap), avec des
+   largeurs de champ resserrées pour tenir sur une ligne même sur une fenêtre
+   desktop modeste. La hauteur/densité des champs passe uniquement par les
+   variables CSS officielles de Material (--mat-form-field-container-height),
+   le même mécanisme déjà utilisé sans souci sur les autres formulaires de
+   l'app - un ::ng-deep direct sur .mat-mdc-form-field-infix a été tenté ici
+   et cassait la mise en page (les champs gonflaient en hauteur), d'où le
+   retrait volontaire de cette règle. panelWidth="auto" sur chaque mat-select
+   (voir le template) garde le menu déroulant lisible malgré le déclencheur
+   étroit. Le seul repli vers plusieurs lignes est la media query dédiée aux
+   petits écrans plus bas - overflow-x:auto reste un filet de sécurité. */
+.filters-card {
+  /* mat-card's own default is display:flex; flex-direction:column - setting
+     display:flex here doesn't override that column direction by itself
+     (each CSS property cascades independently), which is exactly why every
+     field was stacking vertically despite this being "flex" already.
+     flex-direction needs its own !important, same as the other mat-card
+     defaults (padding/radius/shadow) already being overridden below. */
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: var(--dq-radius-lg) !important;
+  box-shadow: var(--dq-shadow-sm) !important;
+  overflow-x: auto;
+}
+
+.filters-label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.filters-label mat-icon {
+  font-size: 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.filter-field {
+  flex: 0 0 8rem;
+  width: 8rem;
+  --mat-form-field-container-height: 44px;
+  --mat-form-field-container-vertical-padding: 8px;
+}
+
+.filter-field.search-field {
+  flex: 1 1 10rem;
+  min-width: 9rem;
+  width: auto;
+}
+
+.search-icon {
+  cursor: pointer;
+}
+
+.reset-btn {
+  flex: 0 0 auto;
+  margin-inline-start: 0;
+  white-space: nowrap;
+}
+
+::ng-deep .filter-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+/* Table */
+.table-card {
+  border-radius: var(--dq-radius-lg) !important;
+  box-shadow: var(--dq-shadow-sm) !important;
+  padding: 0.75rem 0.9rem !important;
+}
+
+/* Caps the table's own height so it scrolls internally once there are more
+   rows than fit comfortably on one screen, instead of pushing the paginator
+   and the rest of the page ever further down - the page's total height stays
+   predictable regardless of how many anomalies a report has. */
+.table-scroll {
+  max-height: 230px;
+  overflow-y: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: start;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 0.4rem 0.65rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  position: sticky;
+  top: 0;
+  background: var(--mat-sys-surface);
+}
+
+td {
+  padding: 0.4rem 0.65rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  font-size: 0.82rem;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  background: var(--mat-sys-surface-container);
+}
+
+.check-type {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.value-cell {
+  font-family: 'Roboto Mono', monospace;
+  max-width: 20rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.value-cell .old-value.strike {
+  color: var(--mat-sys-on-surface-variant);
+  text-decoration: line-through;
+}
+
+.value-cell .arrow-icon {
+  font-size: 0.9rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  vertical-align: middle;
+  margin: 0 0.2rem;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.value-cell .pending-value {
+  color: var(--dq-status-success);
+  font-weight: 600;
+}
+
+.actions-col {
+  width: 2.5rem;
+  text-align: end;
+}
+
+.unsupported-note {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--dq-radius-md, 8px);
+  background: var(--mat-sys-surface-container);
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.82rem;
+}
+
+.unsupported-note mat-icon {
+  font-size: 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+/* Barre flottante des corrections en attente */
+.pending-bar {
+  position: sticky;
+  bottom: 1rem;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  max-width: 1300px;
+  margin: 1rem auto 0;
+  padding: 0.75rem 1.1rem;
+  border-radius: var(--dq-radius-lg);
+  background: var(--mat-sys-surface-container-high, var(--mat-sys-surface-container));
+  box-shadow: var(--dq-shadow-md, var(--dq-shadow-sm));
+}
+
+.pending-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.pending-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  flex: 1;
+  max-height: 4.5rem;
+  overflow-y: auto;
+}
+
+.pending-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: var(--mat-sys-surface-variant);
+  font-size: 0.76rem;
+  white-space: nowrap;
+}
+
+.pending-chip .remove-icon {
+  font-size: 0.9rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.pending-chip .remove-icon:hover {
+  opacity: 1;
+}
+
+.pending-buttons {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+code {
+  background: var(--mat-sys-surface-container);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.82rem;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 2.5rem 1rem;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+@media (max-width: 1100px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Below the width a single row can comfortably hold, fall back to a compact
+     2-column grid rather than stacking every field full-width one under the
+     other - still far more space-efficient than a tall single column. */
+  .filters-card {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+  .filters-label {
+    grid-column: 1 / -1;
+  }
+  .filter-field,
+  .filter-field.search-field {
+    flex: none;
+    min-width: 0;
+    max-width: none;
+    width: 100%;
+  }
+  .reset-btn {
+    grid-column: 1 / -1;
+    margin-inline-start: 0;
+    justify-self: end;
+  }
+}

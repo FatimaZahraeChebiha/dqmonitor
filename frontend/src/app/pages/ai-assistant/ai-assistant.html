@@ -1,0 +1,120 @@
+<div class="page">
+  <div class="page-header">
+    <h1>{{ 'aiAssistant.title' | transloco }}</h1>
+    <p class="subtitle">{{ 'aiAssistant.subtitle' | transloco }}</p>
+  </div>
+
+  <div class="layout">
+    <mat-card class="history-panel">
+      <button mat-flat-button color="primary" class="new-btn" [disabled]="isSending()" (click)="newConversation()">
+        <mat-icon aria-hidden="true">add</mat-icon>
+        {{ 'aiAssistant.newConversation' | transloco }}
+      </button>
+
+      <div class="history-list">
+        @if (conversations().length === 0) {
+          <p class="history-empty">{{ 'aiAssistant.noConversations' | transloco }}</p>
+        }
+
+        @for (conversation of conversations(); track conversation.id) {
+          <div
+            class="history-item"
+            [class.active]="conversation.id === activeId()"
+            (click)="open(conversation.id)"
+            (keyup.enter)="open(conversation.id)"
+            tabindex="0"
+            role="button"
+          >
+            @if (editingId() === conversation.id) {
+              <input
+                class="rename-input"
+                [(ngModel)]="editTitle"
+                maxlength="120"
+                autofocus
+                (click)="$event.stopPropagation()"
+                (keyup.enter)="commitRename(conversation)"
+                (keyup.escape)="cancelRename()"
+                (blur)="commitRename(conversation)"
+              />
+            } @else {
+              <span class="history-title" [class.untitled]="!conversation.title">{{ displayTitle(conversation) }}</span>
+              <span class="history-actions">
+                <button
+                  mat-icon-button
+                  [matTooltip]="'aiAssistant.rename' | transloco"
+                  [attr.aria-label]="'aiAssistant.rename' | transloco"
+                  (click)="startRename(conversation, $event)"
+                >
+                  <mat-icon aria-hidden="true">edit</mat-icon>
+                </button>
+                <button
+                  mat-icon-button
+                  [matTooltip]="'common.delete' | transloco"
+                  [attr.aria-label]="'common.delete' | transloco"
+                  (click)="remove(conversation, $event)"
+                >
+                  <mat-icon aria-hidden="true">delete_outline</mat-icon>
+                </button>
+              </span>
+            }
+          </div>
+        }
+      </div>
+    </mat-card>
+
+    <mat-card class="chat-panel">
+      <div class="messages">
+        @if (isLoadingConversation()) {
+          <div class="empty-state">
+            <mat-spinner diameter="24" />
+          </div>
+        } @else if (messages().length === 0) {
+          <div class="empty-state">
+            <mat-icon aria-hidden="true">smart_toy</mat-icon>
+            <p>{{ 'aiAssistant.emptyState' | transloco }}</p>
+          </div>
+        }
+
+        @for (message of messages(); track $index) {
+          <div class="message" [class.from-user]="message.role === 'user'">
+            <div class="message-label">
+              <mat-icon aria-hidden="true">{{ message.role === 'user' ? 'person' : 'smart_toy' }}</mat-icon>
+              <span>{{ (message.role === 'user' ? 'aiAssistant.you' : 'aiAssistant.assistant') | transloco }}</span>
+            </div>
+            <div class="message-bubble">{{ message.content }}</div>
+          </div>
+        }
+
+        @if (isSending()) {
+          <div class="message">
+            <div class="message-label">
+              <mat-icon aria-hidden="true">smart_toy</mat-icon>
+              <span>{{ 'aiAssistant.assistant' | transloco }}</span>
+            </div>
+            <div class="message-bubble thinking">
+              <mat-spinner diameter="16" />
+              <span>{{ 'aiAssistant.thinking' | transloco }}</span>
+            </div>
+          </div>
+        }
+
+        <div #scrollAnchor></div>
+      </div>
+
+      <div class="composer">
+        <mat-form-field appearance="outline" class="composer-field">
+          <input
+            matInput
+            [(ngModel)]="draft"
+            [placeholder]="'aiAssistant.placeholder' | transloco"
+            [disabled]="isSending()"
+            (keyup.enter)="send()"
+          />
+        </mat-form-field>
+        <button mat-icon-button color="primary" [attr.aria-label]="'aiAssistant.send' | transloco" [disabled]="isSending() || !draft.trim()" (click)="send()">
+          <mat-icon aria-hidden="true">send</mat-icon>
+        </button>
+      </div>
+    </mat-card>
+  </div>
+</div>

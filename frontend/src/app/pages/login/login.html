@@ -1,0 +1,56 @@
+<div class="auth-page">
+  <div class="auth-topbar">
+    <app-theme-toggle />
+    <app-lang-switcher />
+  </div>
+
+  <div class="auth-shell">
+    <div class="brand-block">
+      <img src="/assets/logo-icon.svg" alt="Enhanced Technologies" class="brand-icon" />
+      <h1>{{ 'auth.loginTitle' | transloco }}</h1>
+      <p class="tagline">{{ 'common.appTagline' | transloco }}</p>
+    </div>
+
+    <mat-card class="auth-card">
+      <p class="subtitle">{{ 'auth.loginSubtitle' | transloco }}</p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'auth.email' | transloco }}</mat-label>
+        <input matInput type="email" [(ngModel)]="email" (keyup.enter)="login()" autocomplete="email" />
+        <mat-icon matSuffix>mail</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>{{ 'auth.password' | transloco }}</mat-label>
+        <input matInput type="password" [(ngModel)]="password" (keyup.enter)="login()" autocomplete="current-password" />
+        <mat-icon matSuffix>lock</mat-icon>
+      </mat-form-field>
+
+      <p class="forgot-link">
+        <a routerLink="/forgot-password">{{ 'auth.forgotPasswordLink' | transloco }}</a>
+      </p>
+
+      @if (errorKey()) {
+        <div class="error-message">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorKey() | transloco }}</span>
+        </div>
+      }
+
+      <button mat-flat-button color="primary" class="submit-btn" (click)="login()" [disabled]="isSubmitting()">
+        @if (isSubmitting()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          {{ 'auth.loginButton' | transloco }}
+        }
+      </button>
+
+      <p class="switch-link">
+        {{ 'auth.noAccount' | transloco }}
+        <a routerLink="/register">{{ 'auth.createAccount' | transloco }}</a>
+      </p>
+    </mat-card>
+
+    <p class="footer-note">© {{ currentYear }} Enhanced Technologies</p>
+  </div>
+</div>

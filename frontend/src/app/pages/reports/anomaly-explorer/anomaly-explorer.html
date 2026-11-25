@@ -1,0 +1,358 @@
+<div class="page">
+  <div class="toolbar">
+    <button mat-button class="back-btn" (click)="back()">
+      <mat-icon>arrow_back</mat-icon>
+      {{ 'common.back' | transloco }}
+    </button>
+  </div>
+
+  <div class="page-header">
+    <div>
+      <h1>{{ 'anomalyExplorer.title' | transloco }}</h1>
+      @if (report(); as r) {
+        <p>{{ r.dataset.fileName }}</p>
+      }
+    </div>
+    <div class="header-actions">
+      @if (dataset()?.hasCorrectedFile) {
+        <button mat-stroked-button (click)="downloadCorrected()" [disabled]="isDownloading()">
+          @if (isDownloading()) {
+            <mat-spinner diameter="18"></mat-spinner>
+          } @else {
+            <mat-icon aria-hidden="true">file_download</mat-icon>
+          }
+          {{ 'anomalyExplorer.correction.downloadCorrected' | transloco }}
+        </button>
+        <button mat-stroked-button color="primary" (click)="reanalyze()" [disabled]="isReanalyzing()">
+          @if (isReanalyzing()) {
+            <mat-spinner diameter="18"></mat-spinner>
+          } @else {
+            <mat-icon aria-hidden="true">refresh</mat-icon>
+          }
+          {{ 'anomalyExplorer.correction.reanalyzeButton' | transloco }}
+        </button>
+      }
+      @if (stats()?.hasFullData) {
+        <button mat-stroked-button (click)="exportAnomalies()" [disabled]="isExporting()">
+          @if (isExporting()) {
+            <mat-spinner diameter="18"></mat-spinner>
+          } @else {
+            <mat-icon aria-hidden="true">download</mat-icon>
+          }
+          {{ 'anomalyExplorer.exportButton' | transloco }}
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (dataset()?.hasCorrectedFile && dataset()?.lastCorrectedAt) {
+    <p class="corrected-note">
+      <mat-icon aria-hidden="true">check_circle</mat-icon>
+      {{ 'anomalyExplorer.correction.correctedNote' | transloco: { date: (dataset()!.lastCorrectedAt | localizedDate: 'medium' : language.currentLang()) } }}
+      <button mat-button class="history-toggle" (click)="toggleHistory()">
+        {{ (showHistory() ? 'anomalyExplorer.correction.hideHistory' : 'anomalyExplorer.correction.showHistory') | transloco }}
+      </button>
+    </p>
+  }
+
+  @if (showHistory()) {
+    <mat-card class="history-card">
+      <h2>{{ 'anomalyExplorer.correction.historyTitle' | transloco }}</h2>
+      @if (history().length === 0) {
+        <p class="hint">{{ 'anomalyExplorer.correction.historyEmpty' | transloco }}</p>
+      } @else {
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>{{ 'anomalyExplorer.column.row' | transloco }}</th>
+              <th>{{ 'anomalyExplorer.column.column' | transloco }}</th>
+              <th>{{ 'anomalyExplorer.correction.oldValue' | transloco }}</th>
+              <th>{{ 'anomalyExplorer.correction.newValue' | transloco }}</th>
+              <th>{{ 'anomalyExplorer.correction.correctedBy' | transloco }}</th>
+              <th>{{ 'anomalyExplorer.correction.correctedAt' | transloco }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (h of history(); track h.id) {
+              <tr>
+                <td>{{ h.rowIndex }}</td>
+                <td><code>{{ h.columnName }}</code></td>
+                <td class="old-value">{{ h.oldValue ?? '—' }}</td>
+                <td class="new-value">{{ h.newValue ?? '—' }}</td>
+                <td>{{ h.correctedBy ?? '—' }}</td>
+                <td>{{ h.correctedAt | localizedDate: 'short' : language.currentLang() }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </mat-card>
+  }
+
+  @if (!stats()) {
+    <div class="loading-state">
+      <mat-spinner diameter="36"></mat-spinner>
+    </div>
+  } @else if (!stats()!.hasFullData) {
+    <mat-card class="reanalyze-card">
+      <mat-icon aria-hidden="true">history</mat-icon>
+      <p>{{ 'anomalyExplorer.reanalyzeNeededTitle' | transloco }}</p>
+      <span>{{ 'anomalyExplorer.reanalyzeNeededSubtitle' | transloco }}</span>
+      <a mat-flat-button color="primary" routerLink="/datasets">
+        {{ 'anomalyExplorer.goToDatasets' | transloco }}
+      </a>
+    </mat-card>
+  } @else {
+    <!-- Synthèse -->
+    <div class="stats-grid">
+      <mat-card class="stat-card">
+        <span class="stat-icon danger"><mat-icon aria-hidden="true">description</mat-icon></span>
+        <div class="stat-body">
+          <span class="stat-label">{{ 'anomalyExplorer.stats.total' | transloco }}</span>
+          <span class="stat-value">{{ stats()!.totalAnomalies }}</span>
+        </div>
+      </mat-card>
+      <mat-card class="stat-card">
+        <span class="stat-icon info"><mat-icon aria-hidden="true">view_column</mat-icon></span>
+        <div class="stat-body">
+          <span class="stat-label">{{ 'anomalyExplorer.stats.columnsAffected' | transloco }}</span>
+          <span class="stat-value">{{ stats()!.byColumn.length }}</span>
+        </div>
+      </mat-card>
+      <mat-card class="stat-card">
+        <span class="stat-icon tertiary"><mat-icon aria-hidden="true">settings</mat-icon></span>
+        <div class="stat-body">
+          <span class="stat-label">{{ 'anomalyExplorer.stats.rulesTriggered' | transloco }}</span>
+          <span class="stat-value">{{ stats()!.byRule.length }}</span>
+        </div>
+      </mat-card>
+      @if (stats()!.topColumn && stats()!.topColumnPct !== null) {
+        <mat-card class="stat-card root-cause">
+          <span class="stat-icon on-tint"><mat-icon aria-hidden="true">insights</mat-icon></span>
+          <span class="root-cause-text">
+            {{ 'anomalyExplorer.rootCause' | transloco: { column: stats()!.topColumn!.key, pct: stats()!.topColumnPct } }}
+          </span>
+        </mat-card>
+      }
+    </div>
+
+    <!-- Regroupement -->
+    <mat-card class="group-card">
+      <div class="group-tabs">
+        <button
+          class="group-tab"
+          [class.active]="activeGroupTab() === 'column'"
+          (click)="setGroupTab('column')"
+        >
+          {{ 'anomalyExplorer.groupBy.column' | transloco }}
+        </button>
+        <button
+          class="group-tab"
+          [class.active]="activeGroupTab() === 'ruleName'"
+          (click)="setGroupTab('ruleName')"
+        >
+          {{ 'anomalyExplorer.groupBy.rule' | transloco }}
+        </button>
+        <button
+          class="group-tab"
+          [class.active]="activeGroupTab() === 'checkType'"
+          (click)="setGroupTab('checkType')"
+        >
+          {{ 'anomalyExplorer.groupBy.type' | transloco }}
+        </button>
+      </div>
+
+      <div class="group-list">
+        @if (activeGroupTab() === 'column') {
+          @for (g of stats()!.byColumn; track g.key) {
+            <button
+              class="group-row"
+              [class.selected]="selectedColumn() === g.key"
+              (click)="toggleColumnFilter(g)"
+            >
+              <span class="group-key">{{ g.key }}</span>
+              <span class="group-bar-track">
+                <span class="group-bar-fill" [style.width.%]="(g.count / stats()!.totalAnomalies) * 100"></span>
+              </span>
+              <span class="group-count">{{ g.count }}</span>
+            </button>
+          }
+        }
+        @if (activeGroupTab() === 'ruleName') {
+          @for (g of stats()!.byRule; track g.key) {
+            <button class="group-row" [class.selected]="selectedRule() === g.key" (click)="toggleRuleFilter(g)">
+              <span class="group-key">{{ g.key }}</span>
+              <span class="group-bar-track">
+                <span class="group-bar-fill" [style.width.%]="(g.count / stats()!.totalAnomalies) * 100"></span>
+              </span>
+              <span class="group-count">{{ g.count }}</span>
+            </button>
+          }
+        }
+        @if (activeGroupTab() === 'checkType') {
+          @for (g of stats()!.byType; track g.key) {
+            <button class="group-row" [class.selected]="selectedType() === g.key" (click)="toggleTypeFilter(g)">
+              <span class="group-key">{{ g.key }}</span>
+              <span class="group-bar-track">
+                <span class="group-bar-fill" [style.width.%]="(g.count / stats()!.totalAnomalies) * 100"></span>
+              </span>
+              <span class="group-count">{{ g.count }}</span>
+            </button>
+          }
+        }
+      </div>
+    </mat-card>
+
+    <!-- Filtres et recherche -->
+    <mat-card class="filters-card">
+      <div class="filters-label">
+        <mat-icon aria-hidden="true">filter_alt</mat-icon>
+        <span>{{ 'anomalyExplorer.filters.label' | transloco }}</span>
+      </div>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>{{ 'anomalyExplorer.filters.column' | transloco }}</mat-label>
+        <mat-select [value]="selectedColumn()" (selectionChange)="onColumnSelect($event.value)" panelWidth="auto">
+          <mat-option [value]="null">{{ 'anomalyExplorer.filters.all' | transloco }}</mat-option>
+          @for (g of stats()!.byColumn; track g.key) {
+            <mat-option [value]="g.key">{{ g.key }} ({{ g.count }})</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>{{ 'anomalyExplorer.filters.rule' | transloco }}</mat-label>
+        <mat-select [value]="selectedRule()" (selectionChange)="onRuleSelect($event.value)" panelWidth="auto">
+          <mat-option [value]="null">{{ 'anomalyExplorer.filters.all' | transloco }}</mat-option>
+          @for (g of stats()!.byRule; track g.key) {
+            <mat-option [value]="g.key">{{ g.key }} ({{ g.count }})</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>{{ 'anomalyExplorer.filters.type' | transloco }}</mat-label>
+        <mat-select [value]="selectedType()" (selectionChange)="onTypeSelect($event.value)" panelWidth="auto">
+          <mat-option [value]="null">{{ 'anomalyExplorer.filters.all' | transloco }}</mat-option>
+          @for (g of stats()!.byType; track g.key) {
+            <mat-option [value]="g.key">{{ g.key }} ({{ g.count }})</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="filter-field search-field">
+        <mat-label>{{ 'anomalyExplorer.filters.search' | transloco }}</mat-label>
+        <input matInput [(ngModel)]="searchText" (keyup.enter)="runSearch()" />
+        <mat-icon matSuffix (click)="runSearch()" class="search-icon">search</mat-icon>
+      </mat-form-field>
+
+      <button mat-button class="reset-btn" [disabled]="!hasActiveFilters()" (click)="clearFilters()">
+        <mat-icon aria-hidden="true">refresh</mat-icon>
+        {{ 'anomalyExplorer.filters.clear' | transloco }}
+      </button>
+    </mat-card>
+
+    <!-- Table des anomalies -->
+    <mat-card class="table-card">
+      @if (isLoading()) {
+        <div class="loading-state">
+          <mat-spinner diameter="32"></mat-spinner>
+        </div>
+      } @else if (anomalies().length === 0) {
+        <div class="empty-state">
+          <mat-icon>fact_check</mat-icon>
+          <p>{{ 'anomalyExplorer.emptyTitle' | transloco }}</p>
+        </div>
+      } @else {
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ 'anomalyExplorer.column.row' | transloco }}</th>
+                <th>{{ 'anomalyExplorer.column.column' | transloco }}</th>
+                <th>{{ 'anomalyExplorer.column.rule' | transloco }}</th>
+                <th>{{ 'anomalyExplorer.column.type' | transloco }}</th>
+                <th>{{ 'anomalyExplorer.column.value' | transloco }}</th>
+                <th class="actions-col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (a of anomalies(); track a.id) {
+                <tr class="clickable" tabindex="0" role="button" (click)="openDetail(a)" (keydown.enter)="openDetail(a)">
+                  <td>{{ a.rowIndex ?? '—' }}</td>
+                  <td><code>{{ a.columnName ?? '—' }}</code></td>
+                  <td>{{ a.ruleName }}</td>
+                  <td class="check-type">{{ a.checkType }}</td>
+                  <td class="value-cell">
+                    @if (pendingFor(a); as pending) {
+                      <span class="old-value strike">{{ a.value ?? '—' }}</span>
+                      <mat-icon aria-hidden="true" class="arrow-icon">arrow_forward</mat-icon>
+                      <span class="pending-value">{{ pending.newValue }}</span>
+                    } @else {
+                      {{ a.value ?? '—' }}
+                    }
+                  </td>
+                  <td class="actions-col">
+                    @if (canCorrect()) {
+                      <button
+                        mat-icon-button
+                        [matTooltip]="'anomalyExplorer.edit.button' | transloco"
+                        (click)="openEdit(a, $event)"
+                      >
+                        <mat-icon aria-hidden="true">edit</mat-icon>
+                      </button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <mat-paginator
+          [length]="total()"
+          [pageSize]="pageSize()"
+          [pageIndex]="page()"
+          [pageSizeOptions]="[25, 50, 100]"
+          (page)="loadAnomalies($event)"
+        ></mat-paginator>
+      }
+    </mat-card>
+
+    @if (!canCorrect()) {
+      <p class="unsupported-note">
+        <mat-icon aria-hidden="true">info</mat-icon>
+        {{ 'anomalyExplorer.correction.unsupportedFormat' | transloco }}
+      </p>
+    }
+  }
+</div>
+
+@if (pendingList().length > 0) {
+  <div class="pending-bar">
+    <div class="pending-summary">
+      <mat-icon aria-hidden="true">edit_note</mat-icon>
+      <span>{{ 'anomalyExplorer.correction.pendingCount' | transloco: { count: pendingList().length } }}</span>
+    </div>
+    <div class="pending-chips">
+      @for (p of pendingList(); track p.key) {
+        <span class="pending-chip">
+          {{ p.columnName }} (L{{ p.rowIndex }}): {{ p.oldValue ?? '—' }} → {{ p.newValue }}
+          <mat-icon aria-hidden="true" class="remove-icon" (click)="removePending(p.key)">close</mat-icon>
+        </span>
+      }
+    </div>
+    <div class="pending-buttons">
+      <button mat-button (click)="clearPending()" [disabled]="isSaving()">
+        {{ 'common.cancel' | transloco }}
+      </button>
+      <button mat-flat-button color="primary" (click)="saveCorrections()" [disabled]="isSaving()">
+        @if (isSaving()) {
+          <mat-spinner diameter="18"></mat-spinner>
+        } @else {
+          <mat-icon aria-hidden="true">save</mat-icon>
+        }
+        {{ 'anomalyExplorer.correction.saveButton' | transloco }}
+      </button>
+    </div>
+  </div>
+}

@@ -1,0 +1,67 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>{{ 'rules.title' | transloco }}</h1>
+      <p>{{ 'rules.subtitle' | transloco }}</p>
+    </div>
+    @if (auth.isAdmin()) {
+      <button mat-flat-button color="primary" (click)="openCreate()">
+        <mat-icon>add</mat-icon>
+        {{ 'rules.createButton' | transloco }}
+      </button>
+    }
+  </div>
+
+  <mat-card class="table-card">
+    @if (rules().length === 0) {
+      <div class="empty-state">
+        <mat-icon>rule</mat-icon>
+        <p>{{ 'rules.emptyTitle' | transloco }}</p>
+        <span>{{ 'rules.emptySubtitle' | transloco }}</span>
+      </div>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>{{ 'rules.column.ruleName' | transloco }}</th>
+            <th>{{ 'rules.column.columnName' | transloco }}</th>
+            <th>{{ 'rules.column.ruleType' | transloco }}</th>
+            <th>{{ 'rules.column.status' | transloco }}</th>
+            @if (auth.isAdmin()) {
+              <th>{{ 'common.actions' | transloco }}</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (rule of rules(); track rule.id) {
+            <tr>
+              <td>
+                <div class="rule-name">{{ rule.ruleName }}</div>
+                @if (rule.description) {
+                  <div class="rule-description">{{ rule.description }}</div>
+                }
+              </td>
+              <td><code>{{ rule.columnName }}</code></td>
+              <td>{{ 'rules.ruleType.' + rule.ruleType | transloco }}</td>
+              <td>
+                <span class="badge" [class.active]="rule.isActive" [class.inactive]="!rule.isActive">
+                  {{ (rule.isActive ? 'common.active' : 'common.inactive') | transloco }}
+                </span>
+              </td>
+              @if (auth.isAdmin()) {
+                <td class="actions">
+                  <button mat-icon-button (click)="openEdit(rule)" [attr.aria-label]="'common.edit' | transloco">
+                    <mat-icon aria-hidden="true">edit</mat-icon>
+                  </button>
+                  <button mat-icon-button color="warn" (click)="delete(rule)" [attr.aria-label]="'common.delete' | transloco">
+                    <mat-icon aria-hidden="true">delete_outline</mat-icon>
+                  </button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </mat-card>
+</div>

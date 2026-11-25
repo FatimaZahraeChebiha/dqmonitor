@@ -1,0 +1,6 @@
+/* Visual style only - positioning (fixed on auth pages, inline in the header)
+   is the consuming page's responsibility, matching app-lang-switcher. */
+.theme-toggle-btn {
+  background: var(--mat-sys-surface-container);
+  color: var(--mat-sys-on-surface-variant);
+}

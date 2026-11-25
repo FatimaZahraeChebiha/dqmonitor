@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>{{ 'anomalyExplorer.detail.title' | transloco: { row: anomaly.rowIndex } }}</h2>
+
+<mat-dialog-content class="detail-content">
+  <dl>
+    <dt>{{ 'anomalyExplorer.detail.row' | transloco }}</dt>
+    <dd>{{ anomaly.rowIndex ?? '—' }}</dd>
+
+    <dt>{{ 'anomalyExplorer.detail.column' | transloco }}</dt>
+    <dd><code>{{ anomaly.columnName ?? '—' }}</code></dd>
+
+    <dt>{{ 'anomalyExplorer.detail.value' | transloco }}</dt>
+    <dd class="value">{{ anomaly.value ?? '—' }}</dd>
+
+    <dt>{{ 'anomalyExplorer.detail.rule' | transloco }}</dt>
+    <dd>{{ anomaly.ruleName }}</dd>
+
+    <dt>{{ 'anomalyExplorer.detail.checkType' | transloco }}</dt>
+    <dd><code>{{ anomaly.checkType }}</code></dd>
+  </dl>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" mat-dialog-close>{{ 'common.close' | transloco }}</button>
+</mat-dialog-actions>

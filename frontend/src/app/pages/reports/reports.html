@@ -1,0 +1,94 @@
+<div class="page">
+  <div class="page-header">
+    <h1>{{ 'reports.title' | transloco }}</h1>
+    <p>{{ 'reports.subtitle' | transloco }}</p>
+  </div>
+
+  @if (selectedIds().length > 0) {
+    <div class="compare-bar">
+      <span>{{ 'reports.compareSelectedCount' | transloco: { count: selectedIds().length } }}</span>
+      <button mat-flat-button color="primary" [disabled]="selectedIds().length !== 2" (click)="compareSelected()">
+        <mat-icon aria-hidden="true">compare_arrows</mat-icon>
+        {{ 'reports.compareButton' | transloco }}
+      </button>
+    </div>
+  }
+
+  <mat-card class="table-card">
+    @if (reports().length === 0) {
+      <div class="empty-state">
+        <mat-icon>assessment</mat-icon>
+        <p>{{ 'reports.emptyTitle' | transloco }}</p>
+        <span>{{ 'reports.emptySubtitle' | transloco }}</span>
+      </div>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th class="select-col"></th>
+            <th>{{ 'reports.column.file' | transloco }}</th>
+            <th>{{ 'reports.column.score' | transloco }}</th>
+            <th>{{ 'reports.column.validRows' | transloco }}</th>
+            <th>{{ 'reports.column.invalidRows' | transloco }}</th>
+            <th>{{ 'reports.column.date' | transloco }}</th>
+            <th>{{ 'reports.column.status' | transloco }}</th>
+            <th class="actions-col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (report of reports(); track report.id) {
+            <tr
+              class="clickable"
+              tabindex="0"
+              role="button"
+              [attr.aria-label]="'reports.viewDetail' | transloco"
+              (click)="openDetail(report)"
+              (keydown.enter)="openDetail(report)"
+            >
+              <td class="select-col">
+                <mat-checkbox
+                  [checked]="isSelected(report)"
+                  [attr.aria-label]="'reports.compareCheckboxLabel' | transloco"
+                  (click)="toggleSelection(report, $event)"
+                ></mat-checkbox>
+              </td>
+              <td>{{ report.dataset.fileName }}</td>
+              <td><span class="score" [class]="scoreClass(report.qualityScore)">{{ report.qualityScore }}%</span></td>
+              <td>{{ report.validRows }}</td>
+              <td>{{ report.invalidRows }}</td>
+              <td>{{ report.generatedAt | localizedDate: 'short' : language.currentLang() }}</td>
+              <td>
+                <span class="badge" [class]="scoreClass(report.qualityScore)">
+                  {{ scoreLabelKey(report.qualityScore) | transloco }}
+                </span>
+              </td>
+              <td class="actions-col">
+                <button
+                  mat-icon-button
+                  [matMenuTriggerFor]="rowMenu"
+                  [attr.aria-label]="'reports.rowActions' | transloco"
+                  (click)="$event.stopPropagation()"
+                >
+                  <mat-icon aria-hidden="true">more_vert</mat-icon>
+                </button>
+                <mat-menu #rowMenu="matMenu">
+                  <button mat-menu-item (click)="deleteReport(report, $event)">
+                    <mat-icon aria-hidden="true" color="warn">delete_outline</mat-icon>
+                    <span>{{ 'reports.deleteAction' | transloco }}</span>
+                  </button>
+                </mat-menu>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      <mat-paginator
+        [length]="total()"
+        [pageSize]="pageSize()"
+        [pageIndex]="page()"
+        [pageSizeOptions]="[10, 25, 50]"
+        (page)="load($event)"
+      ></mat-paginator>
+    }
+  </mat-card>
+</div>

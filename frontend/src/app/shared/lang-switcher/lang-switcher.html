@@ -1,0 +1,14 @@
+<div class="lang-switcher">
+  @for (lang of languages; track lang.code) {
+    <button
+      type="button"
+      class="lang-btn"
+      [class.active]="language.currentLang() === lang.code"
+      [attr.aria-pressed]="language.currentLang() === lang.code"
+      [attr.aria-label]="'Switch language to ' + lang.label"
+      (click)="setLanguage(lang.code)"
+    >
+      {{ lang.label }}
+    </button>
+  }
+</div>

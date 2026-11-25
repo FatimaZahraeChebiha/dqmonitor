@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>{{ (isEditMode ? 'rules.editTitle' : 'rules.createTitle') | transloco }}</h2>
+
+<mat-dialog-content class="form-content">
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'rules.fields.ruleName' | transloco }}</mat-label>
+    <input matInput [(ngModel)]="form.ruleName" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'rules.fields.columnName' | transloco }}</mat-label>
+    <input matInput [(ngModel)]="form.columnName" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'rules.fields.ruleType' | transloco }}</mat-label>
+    <mat-select [(ngModel)]="form.ruleType">
+      @for (type of ruleTypes; track type) {
+        <mat-option [value]="type">{{ 'rules.ruleType.' + type | transloco }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'rules.fields.ruleValue' | transloco }}</mat-label>
+    <input matInput [(ngModel)]="form.ruleValue" />
+    <mat-hint>{{ 'rules.ruleValueHint.' + form.ruleType | transloco }}</mat-hint>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'rules.fields.description' | transloco }}</mat-label>
+    <textarea matInput rows="2" [(ngModel)]="form.description"></textarea>
+  </mat-form-field>
+
+  <mat-slide-toggle [(ngModel)]="form.isActive">{{ 'rules.fields.isActive' | transloco }}</mat-slide-toggle>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">{{ 'common.cancel' | transloco }}</button>
+  <button mat-flat-button color="primary" [disabled]="!isValid" (click)="save()">
+    {{ 'common.save' | transloco }}
+  </button>
+</mat-dialog-actions>

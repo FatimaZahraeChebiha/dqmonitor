@@ -1,0 +1,148 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page-header h1 {
+  margin: 0 0 0.25rem;
+}
+
+.page-header p {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.table-card {
+  border-radius: var(--dq-radius-lg) !important;
+  box-shadow: var(--dq-shadow-sm) !important;
+  padding: 1.5rem !important;
+}
+
+.compare-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--dq-radius-lg);
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font-size: 0.9rem;
+}
+
+.select-col {
+  width: 2.5rem;
+}
+
+.actions-col {
+  width: 2.5rem;
+  text-align: end;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: start;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  font-size: 0.9rem;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  background: var(--mat-sys-surface-container);
+}
+
+.clickable:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: -2px;
+  background: var(--mat-sys-surface-container);
+}
+
+.score {
+  font-weight: 700;
+}
+
+.score.success {
+  color: var(--dq-status-success);
+}
+
+.score.warning {
+  color: var(--dq-status-warning);
+}
+
+.score.error {
+  color: var(--dq-status-error);
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.badge.success {
+  background: var(--dq-status-success-bg);
+  color: var(--dq-status-success);
+}
+
+.badge.warning {
+  background: var(--dq-status-warning-bg);
+  color: var(--dq-status-warning);
+}
+
+.badge.error {
+  background: var(--dq-status-error-bg);
+  color: var(--dq-status-error);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 2.5rem 1rem;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.empty-state span {
+  font-size: 0.85rem;
+}

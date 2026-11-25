@@ -1,0 +1,24 @@
+<h2 mat-dialog-title [class.danger-title]="data.danger">{{ data.title }}</h2>
+
+<mat-dialog-content>
+  <p>{{ data.message }}</p>
+
+  @if (data.requireTypedConfirmation) {
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>{{ data.typedConfirmationPlaceholder ?? data.requireTypedConfirmation }}</mat-label>
+      <input matInput [(ngModel)]="typedValue" [placeholder]="data.requireTypedConfirmation" autocomplete="off" />
+    </mat-form-field>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">{{ data.cancelLabel ?? ('common.cancel' | transloco) }}</button>
+  <button
+    mat-flat-button
+    [color]="data.danger ? 'warn' : 'primary'"
+    [disabled]="isConfirmDisabled"
+    (click)="confirm()"
+  >
+    {{ data.confirmLabel ?? ('common.confirm' | transloco) }}
+  </button>
+</mat-dialog-actions>

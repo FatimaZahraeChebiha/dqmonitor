@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>{{ 'anomalyExplorer.edit.title' | transloco: { row: anomaly.rowIndex } }}</h2>
+
+<mat-dialog-content class="edit-content">
+  <div class="edit-meta">
+    <span class="meta-label">{{ 'anomalyExplorer.column.column' | transloco }}</span>
+    <code>{{ anomaly.columnName }}</code>
+    <span class="meta-label">{{ 'anomalyExplorer.column.rule' | transloco }}</span>
+    <span>{{ anomaly.ruleName }}</span>
+  </div>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'anomalyExplorer.edit.currentValue' | transloco }}</mat-label>
+    <input matInput [value]="anomaly.value ?? '—'" disabled />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ 'anomalyExplorer.edit.newValue' | transloco }}</mat-label>
+    <input matInput [(ngModel)]="newValue" (keyup.enter)="save()" />
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">{{ 'common.cancel' | transloco }}</button>
+  <button mat-flat-button color="primary" (click)="save()">
+    {{ 'anomalyExplorer.edit.stage' | transloco }}
+  </button>
+</mat-dialog-actions>

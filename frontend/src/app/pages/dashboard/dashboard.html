@@ -1,0 +1,212 @@
+<div class="page">
+  <div class="kpi-grid">
+    <mat-card class="kpi-card">
+      <mat-icon class="kpi-icon" aria-hidden="true">verified</mat-icon>
+      <div class="kpi-body">
+        <span class="kpi-label">{{ 'dashboard.kpiQualityScore' | transloco }}</span>
+        <span class="kpi-value">{{ summary().avgQualityScore }}%</span>
+      </div>
+    </mat-card>
+    <mat-card class="kpi-card">
+      <mat-icon class="kpi-icon" aria-hidden="true">folder</mat-icon>
+      <div class="kpi-body">
+        <span class="kpi-label">{{ 'dashboard.kpiTotalFiles' | transloco }}</span>
+        <span class="kpi-value">{{ summary().totalFiles }}</span>
+      </div>
+    </mat-card>
+    <mat-card class="kpi-card">
+      <mat-icon class="kpi-icon" aria-hidden="true">error_outline</mat-icon>
+      <div class="kpi-body">
+        <span class="kpi-label">{{ 'dashboard.kpiAnomalies' | transloco }}</span>
+        <span class="kpi-value">{{ summary().totalAnomalies }}</span>
+      </div>
+    </mat-card>
+    <mat-card class="kpi-card">
+      <mat-icon class="kpi-icon" aria-hidden="true">check_circle</mat-icon>
+      <div class="kpi-body">
+        <span class="kpi-label">{{ 'dashboard.kpiValidations' | transloco }}</span>
+        <span class="kpi-value">{{ summary().totalValidations }}</span>
+      </div>
+    </mat-card>
+  </div>
+
+  @if (summary().totalFiles > 0) {
+    <div class="charts-grid">
+      <mat-card class="chart-card">
+        <h2>{{ 'dashboard.statusDistributionTitle' | transloco }}</h2>
+        <div class="chart-wrap">
+          <canvas
+            baseChart
+            [type]="'doughnut'"
+            [data]="statusDistributionData()"
+            [options]="statusDistributionOptions()"
+            role="img"
+            [attr.aria-label]="'dashboard.statusDistributionTitle' | transloco"
+          ></canvas>
+        </div>
+      </mat-card>
+      @if (summary().scoreTrend.length > 0) {
+        <mat-card class="chart-card">
+          <h2>{{ 'dashboard.chartScoreTrend' | transloco }}</h2>
+          <div class="chart-wrap">
+            <canvas
+              baseChart
+              [type]="'line'"
+              [data]="scoreTrendData()"
+              [options]="lineChartOptions()"
+              role="img"
+              [attr.aria-label]="'dashboard.chartScoreTrendAlt' | transloco: { score: summary().avgQualityScore }"
+            ></canvas>
+          </div>
+        </mat-card>
+        <mat-card class="chart-card">
+          <h2>{{ 'dashboard.chartAnomalyDistribution' | transloco }}</h2>
+          <div class="chart-wrap">
+            <canvas
+              baseChart
+              [type]="'bar'"
+              [data]="anomalyDistributionData()"
+              [options]="barChartOptions()"
+              role="img"
+              [attr.aria-label]="'dashboard.chartAnomalyDistributionAlt' | transloco: { count: summary().totalAnomalies }"
+            ></canvas>
+          </div>
+        </mat-card>
+      }
+      @if (summary().analysisVolumeTrend.length > 0) {
+        <mat-card class="chart-card">
+          <h2>{{ 'dashboard.chartAnalysisVolume' | transloco }}</h2>
+          <div class="chart-wrap">
+            <canvas
+              baseChart
+              [type]="'bar'"
+              [data]="analysisVolumeData()"
+              [options]="analysisVolumeOptions()"
+              role="img"
+              [attr.aria-label]="'dashboard.chartAnalysisVolume' | transloco"
+            ></canvas>
+          </div>
+        </mat-card>
+      }
+    </div>
+  }
+
+  @if (summary().qualityDimensions.length > 0 || summary().topProblematicColumns.length > 0) {
+    <div class="secondary-grid">
+      @if (summary().qualityDimensions.length > 0) {
+        <mat-card class="dimensions-card">
+          <h2>{{ 'dashboard.dimensionsTitle' | transloco }}</h2>
+          <div class="dimensions-grid">
+            @for (entry of summary().qualityDimensions; track entry.dimension) {
+              <div class="dimension-item">
+                <div class="dimension-item-header">
+                  <span class="dimension-name">{{ dimensionLabelKey(entry.dimension) | transloco }}</span>
+                  <span class="score" [class]="scoreClass(entry.score)">{{ entry.score }}%</span>
+                </div>
+                <div class="pct-bar-track">
+                  <div class="pct-bar-fill" [class]="scoreClass(entry.score)" [style.width.%]="entry.score"></div>
+                </div>
+              </div>
+            }
+          </div>
+        </mat-card>
+      }
+
+      @if (summary().topProblematicColumns.length > 0) {
+        <mat-card class="top-columns-card">
+          <h2>{{ 'dashboard.topColumnsTitle' | transloco }}</h2>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>{{ 'dashboard.column.name' | transloco }}</th>
+                  <th>{{ 'dashboard.column.anomalies' | transloco }}</th>
+                  <th>{{ 'dashboard.column.percentage' | transloco }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (entry of summary().topProblematicColumns; track entry.columnName) {
+                  <tr>
+                    <td class="column-name">{{ entry.columnName }}</td>
+                    <td>{{ entry.count }}</td>
+                    <td>
+                      <div class="pct-cell">
+                        <span>{{ entry.percentage }}%</span>
+                        <div class="pct-bar-track">
+                          <div class="pct-bar-fill" [style.width.%]="entry.percentage"></div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </mat-card>
+      }
+    </div>
+  }
+
+  <div class="footer-grid">
+    <mat-card class="activity-card">
+      <h2>{{ 'dashboard.recentActivity' | transloco }}</h2>
+      @if (summary().recentActivity.length === 0) {
+        <div class="empty-state">
+          <mat-icon>inbox</mat-icon>
+          <p>{{ 'dashboard.emptyActivityTitle' | transloco }}</p>
+          <span>{{ 'dashboard.emptyActivitySubtitle' | transloco }}</span>
+        </div>
+      } @else {
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ 'dashboard.column.file' | transloco }}</th>
+                <th>{{ 'dashboard.column.date' | transloco }}</th>
+                <th>{{ 'dashboard.column.score' | transloco }}</th>
+                <th>{{ 'dashboard.column.status' | transloco }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (report of summary().recentActivity; track report.id) {
+                <tr>
+                  <td>{{ report.dataset.fileName }}</td>
+                  <td>{{ report.generatedAt | localizedDate: 'short' : language.currentLang() }}</td>
+                  <td><span class="score" [class]="scoreClass(report.qualityScore)">{{ report.qualityScore }}%</span></td>
+                  <td>
+                    <span class="badge" [class]="scoreClass(report.qualityScore)">
+                      {{ scoreLabelKey(report.qualityScore) | transloco }}
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </mat-card>
+
+    <mat-card class="attention-card">
+      <h2>{{ 'dashboard.attentionTitle' | transloco }}</h2>
+      @if (summary().datasetsNeedingAttention.length === 0) {
+        <div class="empty-state">
+          <mat-icon>check_circle</mat-icon>
+          <p>{{ 'dashboard.attentionEmptyTitle' | transloco }}</p>
+          <span>{{ 'dashboard.attentionEmptySubtitle' | transloco }}</span>
+        </div>
+      } @else {
+        <div class="attention-list">
+          @for (entry of summary().datasetsNeedingAttention; track entry.reportId) {
+            <a class="attention-row" [routerLink]="['/reports', entry.reportId]">
+              <div class="attention-row-text">
+                <span class="attention-file">{{ entry.fileName }}</span>
+                <span class="attention-date">{{ entry.generatedAt | localizedDate: 'short' : language.currentLang() }}</span>
+              </div>
+              <span class="badge" [class]="scoreClass(entry.score)">{{ entry.score }}%</span>
+            </a>
+          }
+        </div>
+      }
+    </mat-card>
+  </div>
+</div>

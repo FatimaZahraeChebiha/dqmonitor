@@ -1,0 +1,137 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.page-header h1 {
+  margin: 0 0 0.25rem;
+}
+
+.page-header p {
+  margin: 0;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.table-card {
+  border-radius: var(--dq-radius-lg) !important;
+  box-shadow: var(--dq-shadow-sm) !important;
+  padding: 1rem !important;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th {
+  text-align: start;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--mat-sys-on-surface-variant);
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+td {
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  font-size: 0.88rem;
+  vertical-align: middle;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.rule-name {
+  font-weight: 500;
+}
+
+.rule-description {
+  font-size: 0.76rem;
+  color: var(--mat-sys-on-surface-variant);
+  margin-top: 0.1rem;
+}
+
+code {
+  background: var(--mat-sys-surface-container);
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  white-space: nowrap;
+}
+
+.actions button {
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  --mdc-icon-button-state-layer-size: 2rem;
+}
+
+.actions button .mat-icon {
+  font-size: 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.badge.active {
+  background: var(--dq-status-success-bg);
+  color: var(--dq-status-success);
+}
+
+.badge.inactive {
+  background: var(--dq-status-pending-bg);
+  color: var(--dq-status-pending);
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 2.5rem 1rem;
+  color: var(--mat-sys-on-surface-variant);
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.empty-state span {
+  font-size: 0.85rem;
+}

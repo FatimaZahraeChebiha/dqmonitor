@@ -1,0 +1,45 @@
+:host ::ng-deep .mat-mdc-dialog-title {
+  margin: 0 !important;
+  padding: 1rem 1.5rem 0.5rem !important;
+}
+
+:host ::ng-deep .mat-mdc-dialog-content {
+  padding: 0.5rem 1.5rem !important;
+}
+
+.detail-content {
+  min-width: 360px;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.6rem 1rem;
+  margin: 0;
+}
+
+dt {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+dd {
+  margin: 0;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+dd.value {
+  font-family: 'Roboto Mono', monospace;
+  background: var(--mat-sys-surface-container);
+  border-radius: var(--dq-radius-md, 6px);
+  padding: 0.3rem 0.5rem;
+}
+
+code {
+  background: var(--mat-sys-surface-container);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}

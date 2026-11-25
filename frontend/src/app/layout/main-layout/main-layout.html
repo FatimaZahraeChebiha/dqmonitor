@@ -1,0 +1,140 @@
+<div class="shell">
+  <a class="skip-link" href="#main-content">{{ 'common.skipToContent' | transloco }}</a>
+
+  @if (isMobileSidebarOpen) {
+    <div class="scrim" (click)="closeMobileSidebar()"></div>
+  }
+
+  <aside class="sidebar" [class.open]="isMobileSidebarOpen">
+    <div class="brand">
+      <img src="/assets/logo-icon.svg" alt="" class="brand-logo" />
+      <div class="brand-text">
+        <span class="brand-name">{{ 'common.appName' | transloco }}</span>
+        <span class="brand-tagline">{{ 'common.appTagline' | transloco }}</span>
+      </div>
+    </div>
+
+    <nav class="nav" [attr.aria-label]="'nav.mainNavigation' | transloco" (click)="closeMobileSidebar()">
+      <span class="nav-section-label">{{ 'nav.sectionWorkspace' | transloco }}</span>
+      <a routerLink="/dashboard" routerLinkActive="active" #rla1="routerLinkActive" [attr.aria-current]="rla1.isActive ? 'page' : null">
+        <mat-icon aria-hidden="true">dashboard</mat-icon>
+        <span>{{ 'nav.dashboard' | transloco }}</span>
+      </a>
+      <a routerLink="/datasets" routerLinkActive="active" #rla2="routerLinkActive" [attr.aria-current]="rla2.isActive ? 'page' : null">
+        <mat-icon aria-hidden="true">folder_open</mat-icon>
+        <span>{{ 'nav.datasets' | transloco }}</span>
+      </a>
+      <a routerLink="/reports" routerLinkActive="active" #rla3="routerLinkActive" [attr.aria-current]="rla3.isActive ? 'page' : null">
+        <mat-icon aria-hidden="true">assessment</mat-icon>
+        <span>{{ 'nav.reports' | transloco }}</span>
+      </a>
+      <a routerLink="/validation-rules" routerLinkActive="active" #rla4="routerLinkActive" [attr.aria-current]="rla4.isActive ? 'page' : null">
+        <mat-icon aria-hidden="true">rule</mat-icon>
+        <span>{{ 'nav.rules' | transloco }}</span>
+      </a>
+      <a routerLink="/ai-assistant" routerLinkActive="active" #rla5="routerLinkActive" [attr.aria-current]="rla5.isActive ? 'page' : null">
+        <mat-icon aria-hidden="true">smart_toy</mat-icon>
+        <span>{{ 'nav.aiAssistant' | transloco }}</span>
+      </a>
+
+      @if (auth.isAdmin()) {
+        <span class="nav-section-label">{{ 'nav.sectionAdministration' | transloco }}</span>
+        <a routerLink="/administration" routerLinkActive="active" #rla6="routerLinkActive" [attr.aria-current]="rla6.isActive ? 'page' : null">
+          <mat-icon aria-hidden="true">admin_panel_settings</mat-icon>
+          <span>{{ 'nav.administration' | transloco }}</span>
+        </a>
+      }
+
+      <span class="nav-section-label">{{ 'nav.sectionAccount' | transloco }}</span>
+      <a routerLink="/settings" routerLinkActive="active" #rla7="routerLinkActive" [attr.aria-current]="rla7.isActive ? 'page' : null">
+        <mat-icon aria-hidden="true">settings</mat-icon>
+        <span>{{ 'nav.settings' | transloco }}</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="logout-link" (click)="logout()">
+        <mat-icon aria-hidden="true">logout</mat-icon>
+        <span>{{ 'nav.logout' | transloco }}</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button mat-icon-button class="mobile-toggle" (click)="toggleMobileSidebar()" [attr.aria-label]="'nav.toggleSidebar' | transloco" [attr.aria-expanded]="isMobileSidebarOpen">
+        <mat-icon aria-hidden="true">menu</mat-icon>
+      </button>
+
+      @if (isDashboardRoute()) {
+        <div class="topbar-hero">
+          <span class="topbar-hero-title">{{ 'dashboard.welcome' | transloco: { name: auth.currentUser()?.username } }}</span>
+          <span class="topbar-hero-subtitle">{{ 'dashboard.heroSubtitle' | transloco }}</span>
+        </div>
+      } @else {
+        <div class="spacer"></div>
+      }
+
+      <button
+        mat-icon-button
+        class="notifications-trigger"
+        [matMenuTriggerFor]="notificationsMenu"
+        [attr.aria-label]="'nav.notifications' | transloco"
+        (menuOpened)="notificationCenter.markAllRead()"
+      >
+        <mat-icon
+          aria-hidden="true"
+          [matBadge]="notificationCenter.unreadCount()"
+          [matBadgeHidden]="notificationCenter.unreadCount() === 0"
+          matBadgeSize="small"
+          matBadgeColor="warn"
+        >notifications</mat-icon>
+      </button>
+      <mat-menu #notificationsMenu="matMenu" class="notifications-menu">
+        <div class="notifications-header" (click)="$event.stopPropagation()">
+          {{ 'nav.notificationsTitle' | transloco }}
+        </div>
+        @if (notificationCenter.recentReports().length === 0) {
+          <div class="notifications-empty" (click)="$event.stopPropagation()">
+            {{ 'nav.notificationsEmpty' | transloco }}
+          </div>
+        } @else {
+          @for (report of notificationCenter.recentReports(); track report.id) {
+            <button mat-menu-item (click)="openReport(report)">
+              <div class="notification-item">
+                <span class="notification-file">{{ report.dataset.fileName }}</span>
+                <span class="notification-meta">
+                  <span class="score" [class]="scoreClass(report.qualityScore)">{{ report.qualityScore }}%</span>
+                  <span class="notification-date">{{ report.generatedAt | localizedDate: 'short' : language.currentLang() }}</span>
+                </span>
+              </div>
+            </button>
+          }
+        }
+      </mat-menu>
+
+      <app-theme-toggle />
+      <app-lang-switcher />
+
+      <button mat-button class="user-chip" [matMenuTriggerFor]="userMenu" [attr.aria-label]="'nav.userMenu' | transloco">
+        <mat-icon aria-hidden="true">account_circle</mat-icon>
+        <span>{{ auth.currentUser()?.username }}</span>
+        <mat-icon class="chevron" aria-hidden="true">expand_more</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item (click)="goToSettings()">
+          <mat-icon aria-hidden="true">settings</mat-icon>
+          <span>{{ 'nav.settings' | transloco }}</span>
+        </button>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon aria-hidden="true">logout</mat-icon>
+          <span>{{ 'nav.logout' | transloco }}</span>
+        </button>
+      </mat-menu>
+    </header>
+
+    <main class="content" id="main-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>
